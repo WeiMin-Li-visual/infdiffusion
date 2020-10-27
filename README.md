@@ -8,7 +8,7 @@ A visualization platform of information diffusion in social network
 3.echarts模板： https://echarts.apache.org/zh/index.html<br>
 4.layui前端框架： https://www.layui.com/doc/ 
 # 前期任务
-主要包含如下四个模块：<br>
+目前平台分为如下四个模块，往后在往平台添加内容
 1.谣言传播可视化<br>
 2.谣言溯源过程可视化<br>
 3.用户行为传播可视化<br>
