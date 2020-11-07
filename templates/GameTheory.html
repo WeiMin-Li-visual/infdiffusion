@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html style="height: 100%; initial-scale: 0.1">
+<head>
+    <meta charset="UTF-8">
+    <title>基于博弈论的行为扩散过程</title>
+</head>
+<body style="height: 100%; margin: 0">
+{# 准备一个放图表的容器 #}
+<div id="container" style="height: 100%"></div>
+<script type="text/javascript" src="/static/js/echarts.js"></script>
+<script type="text/javascript" src="/static/js/gt_function.js"></script>
+<script type="text/javascript" src="/static/js/jquery.js"></script>
+<script type="text/javascript" src="//cdn.bootcss.com/socket.io/1.5.1/socket.io.min.js"></script>
+<script type="text/javascript">
+
+    var myChart = echarts.init(document.getElementById("container"));
+    // 首次显示加载动画
+    myChart.showLoading();
+    var step_active_node = {{ step_active_node | tojson }};
+    var step_active_node_sum = {{ step_active_node_sum | tojson }};
+    var graph = {{ graph_data | tojson }};//获取后端返回的图数据
+    // 隐藏加载动画
+    myChart.hideLoading();
+    graph = init_graph(graph);   //初始化图数据
+    option = init_option(graph); //初始化属性
+    myChart.setOption(option);   //执行该语句就可以根据你设置的属性进行图的生成
+
+    var steps = step_active_node.length;
+    console.log(steps);
+    var text = "第" + 0 + "时间步的扩散过程\n" + "当前时间片共有" + step_active_node[0].length + "个节点进行行为1";	 //标题
+    var subtext = "";
+    var nodeNum = 0;
+    var count = 0;
+    update_show(text, subtext, myChart);
+    intervalNo = setInterval(() => {
+        if (count < steps) {
+            if (nodeNum < step_active_node[count].length) {
+                //下面这几个步骤用于把当前显示节点的当前显示的记录的被激活节点大小和种类变化，然后显示
+                var node = step_active_node[count][nodeNum] - 1;
+                graph.nodes[node].category = 1;
+                graph.nodes[node].symbolSize = 30;
+                nodeNum++;
+                myChart.setOption({
+                    title: {
+                        subtext: "当前：" + node + "节点进行行为1",
+                    },
+                    series: [
+                        {
+                            data: graph.nodes,
+                            links: graph.links
+                        }
+                    ]
+                });
+            } else {
+                nodeNum = 0;
+                count++;
+                if (count === steps) {
+                    text = "传播结束";
+                    subtext = "";
+                    update_show(text, subtext, myChart);
+                    console.log(step_active_node_sum);
+
+                } else {
+                    text = "第" + count + "时间步的扩散过程\n" + "当前时间片共有" + step_active_node[count].length + "个节点进行行为1";
+                    update_show(text, subtext, myChart);
+                }
+            }
+        }
+    }, 100);
+
+    // 更新画面
+    function update_show(text, subtext, myChart) {
+        myChart.setOption({
+            title: {
+                text: text,
+                subtext: subtext
+            },
+            series: [{
+                data: graph.nodes,
+                links: graph.links
+            }]
+        })
+    }
+
+</script>
+</body>
+</html>

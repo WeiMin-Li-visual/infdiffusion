@@ -1,10 +1,9 @@
 # -*- coding:utf-8 -*-
-from flask import Flask, render_template, request, flash
-import json
-import random
-import copy
+from flask import Flask, render_template
 from flask_socketio import SocketIO
 from threading import Lock
+from algorithm import gameTheory
+import json
 
 thread_lock = Lock()
 
@@ -157,17 +156,95 @@ def introduceGameTheory():
 # 基于博弈论的行为扩散
 @app.route('/GameTheory')
 def GameTheory():
-    '''
-    TODO
-    :return:
-    '''
-    return render_template('GameTheory.html')
+    steps = 10
+    demd = 10
+    proportion = 0.01
+    path = "static/data/synfix/z_3/synfix_3.t01.edges"
+    network, node_num, graph_data, G = gameTheory.init_network(path)
+    edgeNum = gameTheory.init_edgeNum(network, node_num)
+    nodes = list(G.nodes)
+
+    # 初始随机设置1%的节点为激活节点
+    now_active_nodes = gameTheory.active_node(node_num, proportion, nodes)
+    step_active_node = []
+    step_active_node.append(list(now_active_nodes))
+    step_active_node_sum = []  # 每一步的激活结点数量
+    step_active_node_sum.append(len(now_active_nodes) / node_num)
+    print("第%s轮" % 0)
+    print(step_active_node_sum)
+    active_nodes = set()
+    active_nodes = active_nodes.union(now_active_nodes)
+
+    edge_records = []
+
+    for i in range(steps):
+        now_active_nodes, edge_records = gameTheory.diffuse_one_round(G, active_nodes, demd, edgeNum)
+        step_active_node.append(list(now_active_nodes))
+        active_nodes = active_nodes.union(now_active_nodes)
+        step_active_node_sum.append(len(active_nodes) / node_num)
+        print("第%s轮" % (i + 1))
+        print(step_active_node_sum)
+
+    # print(step_active_node)
+    # print(len(step_active_node))
+    # step_active_node = json.dumps(step_active_node)
+    # print(step_active_node)
+    # step_active_node_sum = json.dumps(step_active_node_sum)
+    return render_template('GameTheory.html', graph_data=graph_data, step_active_node=step_active_node,
+                           step_active_node_sum=step_active_node_sum)
+
+
+# 基于博弈论的行为扩散
+def GameTheory_thread():
+    steps = 10
+    demd = 10
+    proportion = 0.01
+    path = "static/data/synfix/z_3/synfix_3.t01.edges"
+    network, node_num, graph_data, G = gameTheory.init_network(path)
+    edgeNum = gameTheory.init_edgeNum(network, node_num)
+    nodes = list(G.nodes)
+
+    count = 0
+    socketio.emit('server_response',
+                  {'data': [count, graph_data, 0]},
+                  namespace='/GameTheory')
+
+    # 初始随机设置1%的节点为激活节点
+    now_active_nodes = gameTheory.active_node(node_num, proportion, nodes)
+
+    step_active_node_sum = []  # 每一步的激活结点数量
+    active_nodes = set()
+    edge_records = []
+
+    while steps > 0:
+        count += 1
+        now_active_nodes_json = list(now_active_nodes)
+        edge_records_json = list(edge_records)
+
+        socketio.emit('server_response',
+                      {'data': [count, now_active_nodes_json, edge_records_json]},
+                      namespace='/GameTheory')
+
+        active_nodes = active_nodes.union(now_active_nodes)
+        step_active_node_sum.append(len(active_nodes) / node_num)
+        print("第%s轮" % steps)
+        print(step_active_node_sum)
+        now_active_nodes, edge_records = gameTheory.diffuse_one_round(G, active_nodes, demd, edgeNum)
+        steps -= 1
+
+    # 传输最后的扩散结果
+    count += 1
+    print(count)
+    socketio.sleep(1)  # 休眠1秒
+    socketio.emit('server_response',
+                  {'data': [count, step_active_node_sum, 0]},
+                  namespace='/GameTheory')
 
 
 # 前后端通信（参见：https://blog.csdn.net/weixin_36380516/article/details/80418354）
-@socketio.on('connect', namespace='/SI')
-def test_connect():
-    thread = socketio.start_background_task(target=SI)
+@socketio.on('connect', namespace='/GameTheory')
+def GameTheory_connect():
+    thread = socketio.start_background_task(target=GameTheory_thread)
 
 
 if __name__ == '__main__':
