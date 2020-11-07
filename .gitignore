@@ -1,0 +1,6 @@
+[root@kevin ~]# cat .gitignore
+*.xml
+*.log
+*.apk
+*.iml
+*.pyc

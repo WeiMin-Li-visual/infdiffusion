@@ -3,13 +3,13 @@ from flask import Flask, render_template,request
 from flask_socketio import SocketIO
 from threading import Lock
 from algorithm import gameTheory
+from algorithm import sourceDetection as sd
 import json
 
 import networkx as nx
 from flask_socketio import SocketIO
 from threading import Lock
 import re
-import sourceDetection as sd
 thread_lock = Lock()
 
 async_mode = None
@@ -247,8 +247,8 @@ def GameTheory():
     step_active_node.append(list(now_active_nodes))
     step_active_node_sum = []  # 每一步的激活结点数量
     step_active_node_sum.append(len(now_active_nodes) / node_num)
-    print("第%s轮" % 0)
-    print(step_active_node_sum)
+    # print("第%s轮" % 0)
+    # print(step_active_node_sum)
     active_nodes = set()
     active_nodes = active_nodes.union(now_active_nodes)
 
@@ -259,8 +259,8 @@ def GameTheory():
         step_active_node.append(list(now_active_nodes))
         active_nodes = active_nodes.union(now_active_nodes)
         step_active_node_sum.append(len(active_nodes) / node_num)
-        print("第%s轮" % (i + 1))
-        print(step_active_node_sum)
+        # print("第%s轮" % (i + 1))
+        # print(step_active_node_sum)
     return render_template('GameTheory.html', graph_data=graph_data, step_active_node=step_active_node,
                            step_active_node_sum=step_active_node_sum)
 
