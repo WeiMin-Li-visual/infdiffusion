@@ -3,19 +3,17 @@
 # 可视化工具
 &emsp;&emsp;使用Python还是Java组内成员一起商讨，最好选择大家都会的（需要在12月前完成任务，学框架不能花太多时间）。<br>
 # 网上学习资料
-<<<<<<< HEAD
-1.Github基本命令： https://www.liaoxuefeng.com/wiki/896043488029600<br>
-2.flask的基础知识： https://www.bilibili.com/video/av19817183<br>
-3.echarts模板： https://echarts.apache.org/zh/index.html<br>
-4.layui前端框架： https://www.layui.com/doc/ 
+&emsp;&emsp;1.Github基本命令： https://www.liaoxuefeng.com/wiki/896043488029600<br>
+&emsp;&emsp;2.flask的基础知识： https://www.bilibili.com/video/av19817183<br>
+&emsp;&emsp;3.echarts模板： https://echarts.apache.org/zh/index.html<br>
+&emsp;&emsp;4.layui前端框架： https://www.layui.com/doc/ 
 # 任务说明
 该平台主要包含如下四个模块：<br>
-1.舆情演化<br>
-2.谣言传播过程可视化<br>
-3.谣言溯源过程可视化<br>
-4.行为传播可视化<br>
+&emsp;&emsp;1.舆情演化<br>
+&emsp;&emsp;2.谣言传播过程可视化<br>
+&emsp;&emsp;3.谣言溯源过程可视化<br>
+&emsp;&emsp;4.行为传播可视化<br>
 #第一期任务分工
-=======
 &emsp;&emsp;1.Github基本命令： https://www.liaoxuefeng.com/wiki/896043488029600<br>
 &emsp;&emsp;2.flask的基础知识： https://www.bilibili.com/video/av19817183<br>
 &emsp;&emsp;3.echarts模板： https://echarts.apache.org/zh/index.html<br>
