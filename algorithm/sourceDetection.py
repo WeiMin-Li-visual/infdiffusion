@@ -334,7 +334,6 @@ import numpy as np
 import networkx as nx
 import json
 import random
-from pylouvain import PyLouvain
 from itertools import chain
 from ast import literal_eval
 
