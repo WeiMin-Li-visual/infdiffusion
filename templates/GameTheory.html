@@ -76,15 +76,13 @@
                             data: step_active_node_sum
                         }]
                     });
-
-
                 } else {
                     text = "第" + count + "时间步的扩散过程\n" + "当前时间片共有" + step_active_node[count].length + "个节点进行行为1";
                     update_show(text, subtext, myChart);
                 }
             }
         }
-    }, 100);
+    }, 500);
 
     // 更新画面
     function update_show(text, subtext, myChart) {

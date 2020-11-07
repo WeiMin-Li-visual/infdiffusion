@@ -5,7 +5,11 @@
   </component>
   <component name="NewModuleRootManager">
     <content url="file://$MODULE_DIR$" />
+<<<<<<< HEAD
     <orderEntry type="jdk" jdkName="Python 3.8 (flask_inf)" jdkType="Python SDK" />
+=======
+    <orderEntry type="jdk" jdkName="Python 3.6" jdkType="Python SDK" />
+>>>>>>> 1aae780a4e28360e60a9c11b9ae26e6cda8f236b
     <orderEntry type="sourceFolder" forTests="false" />
   </component>
   <component name="TemplatesService">
