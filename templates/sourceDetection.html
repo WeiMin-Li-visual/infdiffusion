@@ -102,6 +102,7 @@
     graph = init_graph(graph);  //初始化图数据
     option = init_option(graph);//初始化属性
     myChart.setOption(option);//执行该语句就可以根据你设置的属性进行图的生成
+
     var err={{err|tojson}}
     if(err=="false") {
         var observerNodeList ={{ ObserverNodeList }}//观测节点列表
@@ -153,6 +154,7 @@
                     }
                     //把上一步的所有显示过的边都恢复正常并清除显示痕迹
                     for (var edge = 0; edge < Object.keys(edge_records[iteration - 1]).length; edge++) {
+                        console.log(edge_records[iteration - 1][edge]);
                         graph.links[edge_records[iteration - 1][edge]].lineStyle.width = 1;
                         graph.links[edge_records[iteration - 1][edge]].lineStyle.color = 'rgba(0, 0, 0, 0.7)';
                         //graph.links[edge_records[iteration - 1][edge]].lineStyle.color = 'source';
@@ -332,7 +334,8 @@
         };
         myChart.setOption(option);
         }
-    }else{
+    }
+    else{
         if(err!="true")//输入错误提示
         {
             layui.use('layer', function(){

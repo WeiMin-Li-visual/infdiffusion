@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>SI模型介绍</title>
+  <link rel="stylesheet" href="/static/layui/css/layui.css" media="all">
+</head>
+<body>
+<div style="padding: 20px; background-color: #e3e3e3;">
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-md12">
+            <div class="layui-card" >
+                <div class="layui-collapse" lay-accordion style="background-color: #f8f8f8">
+                    <div class="layui-colla-item" style="color: #000000;">
+                        <div class="layui-colla-title" style="background-color: #f8f8f8;font-size:25px; font-weight: bold; color: #000000;">
+                            SI模型介绍
+                        </div>
+                        <div class="layui-colla-content layui-show" style="background-color:#f8f8f8; overflow:auto; width:1400px; height:180px; font-size:18px; color: #000000; line-height:25pt; text-align: justify; text-indent: 2em;">
+                            SI 模型只考虑了传染病爆发和传播的过程，将人群分为 S 类和 I 类，其中S类为易感者 (Susceptible)，指未得病者，但缺乏免疫能力，与感染者接触后容易受到感染；I 类为感病者 (Infectious)，指染上传染病的人，可以传播给 S 类成员，将其变为 I 类成员。主要参数为感染率：已感染节点将疾病传播到相邻节点并使其感染的概率。图1为人数为104，感染率为0.3的SI模型结果。图2为传播动画截图，红色节点代表感染者，灰色节点代表健康人群。系统中感染率的输入格式为0-1之间的小数，如“0.1”，“0.123”等。
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="layui-card" style="background-color: #f8f8f8">
+                <div class="layui-carousel" id="lunbotu" style="margin:0 auto; " lay-anim="" lay-indicator="inside" lay-arrow="hover">
+                    <div carousel-item align="center">
+                        <div class="layui-this"><img src="../static/image/SI传播结果.PNG"  style="margin:0 auto;"></div>
+                        <div class=""><img src="../static/image/SI_process.PNG" style="margin:0 auto;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="/static/layui/layui.js"></script>
+<script>
+layui.use('carousel', function(){
+  var carousel = layui.carousel;
+  //建造实例
+  carousel.render({
+        elem: '#lunbotu'     //指向容器选择器
+        ,anim:  'fade'       //轮播切换动画方式
+        ,margin: 'auto'
+        ,width: '1400px'     //设置容器宽度
+        ,height: '800px'     //设定轮播容器高度
+        ,arrow: 'always'     //始终显示箭头
+        ,indicator: 'none'   //指示器位置:不显示
+        ,interval: '3000'    //自动切换的时间间隔
+  });
+});
+layui.use('element', function(){
+  var element = layui.element;
+});
+</script>
+
+</body>
+</html>
