@@ -3,86 +3,198 @@
 <head>
     <meta charset="UTF-8">
     <title>基于博弈论的行为扩散过程</title>
+    <script type="text/javascript" src="../static/layui/layui.js"></script>
+    <link rel="stylesheet" href="../static/layui/css/layui.css" media="all">
+    {# <link> 标签通常用于链接到样式表: #}
+    <style>
+        #container {
+            position: absolute;
+            left: 10%;
+        }
+
+        #control {
+            margin-top: 30px;
+            width: 20%;
+            height: 80%;
+        }
+
+        .layui-input {
+            width: 100%
+        }
+
+        .layui-form-label {
+            width: 80px;
+        }
+    </style>
 </head>
 <body style="height: 100%; margin: 0">
-{# 准备一个放图表的容器 #}
-<div id="container" style="height: 100%"></div>
+<div id="container" style="height: 100%;width:80%;left: 2%"></div>
+<div id="control" style="position: absolute;height: 20%;width:20%;right: 1%;">
+    <form class="layui-form" method="post">
+        <div class="layui-form-item ">
+            <label class="layui-form-label">初始活跃节点的比例</label>
+            {#            <li><input type="text" id="name" name="name" placeholder="昵称"#}
+            {#                       maxlength="15" οnblur="checkName()"/> <a href="#" id="nameclass" class=""> </a>#}
+            {#                <div class="clear"></div>#}
+            {#            </li>&nbsp;&nbsp;#}
+            {#            <span style="font-size:13px" id="namespan"></span>#}
+            <div class="layui-input-block">
+                <input type="text" id="pro" name="proportion" placeholder="请输入0-1之间的值"
+                       autocomplete="off"
+                       class="layui-input">
+                {#                <a href="#" id="proclass" class=""> </a>#}
+                <i class="layui-icon layui-icon-about" style="font-size: 20px; color: #FF0000;" title="请输入0-1之间的值"></i>
+            </div>
+            <span style="font-size:13px" id="prospan"></span>
+        </div>
+
+        <div class="layui-form-item ">
+            <label class="layui-form-label">不确定因子的大小</label>
+            <div class="layui-input-block">
+                <input type="text" name="uncertainty" placeholder="请输入大于0的值" autocomplete="off" class="layui-input">
+                <i class="layui-icon layui-icon-about" style="font-size: 20px; color: #FF0000;" title="请输入大于0的值"></i>
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">选择网络</label>
+            <div class="layui-input-block">
+                <select name="network" lay-filter="network">
+                    <option value="wiki" selected>wiki</option>
+                    <option value="synfix">synfix</option>
+                    <option value="BA无标度">BA无标度网络</option>
+                    <option value="ER">ER网络</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">博弈方式</label>
+            <div class="layui-input-block">
+                <select name="method" lay-filter="fangfa">
+                    <option value="协调博弈" selected="">协调博弈</option>
+                    {#                    <option value="2">多次博弈</option>#}
+                </select>
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                <button class="layui-btn" lay-submit lay-filter="*">提交</button>
+            </div>
+        </div>
+    </form>
+    <iframe id="iframe" name="iframe" style="display:none;"></iframe>
+
+</div>
 <script type="text/javascript" src="/static/js/echarts.js"></script>
 <script type="text/javascript" src="/static/js/gt_function.js"></script>
 <script type="text/javascript" src="/static/js/jquery.js"></script>
 <script type="text/javascript" src="//cdn.bootcss.com/socket.io/1.5.1/socket.io.min.js"></script>
 <script type="text/javascript">
-
+    layui.use('form', function () {
+        var form = layui.form;
+        form.render();
+    });
     var myChart = echarts.init(document.getElementById("container"));
     // 首次显示加载动画
-    myChart.showLoading();
-    var step_active_node = {{ step_active_node | tojson }};
-    var step_active_node_sum = {{ step_active_node_sum | tojson }};
-    var graph = {{ graph_data | tojson }};//获取后端返回的图数据
-    // 隐藏加载动画
-    myChart.hideLoading();
-    graph = init_graph(graph);   //初始化图数据
-    option = init_option(graph); //初始化属性
-    myChart.setOption(option);   //执行该语句就可以根据你设置的属性进行图的生成
+    myChart.showLoading({text: '请先配置右边参数', textColor: '#000000'});
 
-    var steps = step_active_node.length;
-    console.log(steps);
-    var text = "第" + 0 + "时间步的扩散过程\n" + "当前时间片共有" + step_active_node[0].length + "个节点进行行为1";	 //标题
-    var subtext = "";
-    var nodeNum = 0;
-    var count = 0;
-    update_show(text, subtext, myChart);
-    intervalNo = setInterval(() => {
-        if (count < steps) {
-            if (nodeNum < step_active_node[count].length) {
-                //下面这几个步骤用于把当前显示节点的当前显示的记录的被激活节点大小和种类变化，然后显示
-                var node = step_active_node[count][nodeNum] - 1;
-                graph.nodes[node].category = 1;
-                graph.nodes[node].symbolSize = 30;
-                nodeNum++;
-                myChart.setOption({
-                    title: {
-                        subtext: "当前：" + node + "节点进行行为1",
-                    },
-                    series: [
-                        {
-                            data: graph.nodes,
-                            links: graph.links
-                        }
-                    ]
-                });
-            } else {
-                nodeNum = 0;
-                count++;
-                if (count === steps) {
+    var err ={{err|tojson}};
+    console.log(err);
+    if (err === "false") {
+        var graph = {{ graph_data | tojson }};//获取后端返回的图数据
+
+        // 隐藏加载动画
+        myChart.hideLoading();
+        graph = init_graph(graph);   //初始化图数据
+        option = init_option(graph); //初始化属性
+        myChart.setOption(option);   //执行该语句就可以根据你设置的属性进行图的生成
+
+        var step_active_node = {{ step_active_node | tojson }};
+        var step_active_node_sum = {{ step_active_node_sum | tojson }};
+        var steps = step_active_node.length;
+        var proportion ={{ proportion|tojson }};
+        var uncertainty ={{ uncertainty|tojson }};
+        var network_path ={{ network_path|tojson }};
+        var method ={{ method|tojson }};
+        console.log(step_active_node);
+        console.log(step_active_node_sum);
+        var text = "使用" + network_path + "网络，" + "进行" + method + "\n" + "初始活跃用户比例为" + proportion + "\n" +
+            "不确定因子大小为" + uncertainty + "\n" + "第" + 0 + "时间步的扩散过程\n" +
+            "当前时间片共有" + step_active_node[0].length + "个节点进行行为1";
+        var subtext = "";
+        var nodeNum = 0;
+        var count = 0;
+        var index={{ index|tojson }}
+        update_show(text, subtext, myChart);
+        intervalNo = setInterval(() => {
+            if (count < steps) {
+                if (nodeNum < step_active_node[count].length) {
+                    //下面这几个步骤用于把当前显示节点的当前显示的记录的被激活节点大小和种类变化，然后显示
+
+                    var node = step_active_node[count][nodeNum] - index;
+                    graph.nodes[node].category = 1;
+                    graph.nodes[node].symbolSize = 30;
+                    nodeNum++;
                     myChart.setOption({
                         title: {
-                            text: '传播结果图'
+                            subtext: "当前：" + node + "节点进行行为1",
                         },
-                        tooltip: {
-                            trigger:'axis',  // 坐标轴触发，主要在柱状图，折线图等会使用类目轴的图表中使用。
-                        },
-                        legend: {
-                            data: ['step_active_node_sum']
-                        },
-                        xAxis: {
-                            data: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
-                        },
-                        yAxis: {},
-                        series: [{
-                            name: '激活比例',
-                            color:'#ff0000',
-                            type: 'line',
-                            data: step_active_node_sum
-                        }]
+                        series: [
+                            {
+                                data: graph.nodes,
+                                links: graph.links
+                            }
+                        ]
                     });
                 } else {
-                    text = "第" + count + "时间步的扩散过程\n" + "当前时间片共有" + step_active_node[count].length + "个节点进行行为1";
-                    update_show(text, subtext, myChart);
+                    nodeNum = 0;
+                    count++;
+                    console.log(count);
+                    if (count === steps) {
+                        myChart.setOption({
+                            title: {
+                                text: "使用" + network_path + "网络，" + "进行" + method + "，" + "初始活跃用户比例为" + proportion + "，" +
+            "不确定因子大小为" + uncertainty + "的行为"+'传播结果图'
+                            },
+                            tooltip: {
+                                trigger: 'axis',  // 坐标轴触发，主要在柱状图，折线图等会使用类目轴的图表中使用。
+                            },
+                            legend: {
+                                data: ['step_active_node_sum']
+                            },
+                            xAxis: {
+                                data: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+                            },
+                            yAxis: {},
+                            series: [{
+                                name: '激活比例',
+                                color: '#ff0000',
+                                type: 'line',
+                                data: step_active_node_sum
+                            }]
+                        });
+                    } else {
+                        text = "使用" + network_path + "网络，" + "进行" + method + "\n" + "初始活跃用户比例为" + proportion + "\n" +
+                            "不确定因子大小为" + uncertainty + "\n" + "第" + count + "时间步的扩散过程\n" +
+                            "当前时间片共有" + step_active_node[count].length + "个节点进行行为1";
+                        update_show(text, subtext, myChart);
+                    }
                 }
             }
+        }, 50);
+    } else {
+        if (err !== "true")//输入错误提示
+        {
+            layui.use('layer', function () {
+                var layer = layui.layer;
+                //layer.msg(err);
+                layer.alert(err,
+                    {icon: 6, title: "提示", offset: "0px", skin: 'layui-layer-molv'})
+            });
         }
-    }, 500);
+    }
 
     // 更新画面
     function update_show(text, subtext, myChart) {
@@ -97,7 +209,6 @@
             }]
         })
     }
-
 </script>
 </body>
 </html>

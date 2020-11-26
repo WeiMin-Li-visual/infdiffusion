@@ -184,6 +184,7 @@ coverage.xml
 # Translations
 *.mo
 *.pot
+test*.*
 
 # Django stuff:
 *.log
