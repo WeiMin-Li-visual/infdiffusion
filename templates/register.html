@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>注册界面</title>
+    <link rel="stylesheet" href="../static/layui/css/layui.css">
+    <link rel="icon" href="../static/image/icon/logo.ico" type="image/x-icon">
+    <link rel="stylesheet" href="../static/css/login.css" media="all">
+
+    <style>
+        /* 覆盖原框架样式 */
+        .layui-elem-quote {
+            background-color: inherit !important;
+        }
+
+        .layui-input, .layui-select, .layui-textarea {
+            background-color: inherit;
+            padding-left: 30px;
+        }
+
+        li {
+            list-style: none;
+        }
+
+        #abc {
+            width: 450px;
+            height: 530px;
+            border: 0.1px solid black;
+            margin: 0.01px auto;
+        }
+
+        #title {
+            height: 60px;
+        }
+
+        #title p {
+            font-size: 20px;
+            text-align: center;
+            line-height: 50px;
+            font-weight: 700;
+        }
+
+        #login,
+        #register,
+        #forget {
+            width: 60%;
+            height: 35px;
+            display: block;
+            margin: 5px auto;
+            border-radius: 10px;
+        }
+
+        #save {
+            padding-left: 250px;
+        }
+
+        #save span {
+            font-size: 10px;
+        }
+
+        #check {
+            position: relative;
+            top: 1px;
+        }
+        .wrong,
+        .correct {
+            font-size: 14px;
+            font-weight: 500;
+            display: none;
+        }
+        .correct {
+            color: green;
+        }
+        .wrong {
+            color: red;
+        }
+        .textbox{
+            height: 30px;width: 220px
+        }
+
+    </style>
+</head>
+<body>
+<!-- 头部 -->
+<div class="layui-fluid">
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-sm12 layui-col-md12 zyl_mar_01">
+            <blockquote class="layui-elem-quote"><b style="font-size: 20px">社交网络舆情演化分析平台 | </b>
+                <b style="font-size: 20px"> 注册界面</b></blockquote>
+        </div>
+    </div>
+</div>
+<!-- 头部结束 -->
+
+<!-- 特效部分 -->
+<div class="layui-row">
+    <div class="layui-col-sm12 layui-col-md12">
+        <div class="layui-carousel zyl_login_height" id="zyllogin" lay-filter="zyllogin">
+            <div carousel-item="">
+                <div>
+                    <div class="zyl_login_cont"></div>
+                </div>
+                <div>
+                    <div class="background">
+                        <span></span><span></span><span></span>
+                        <span></span><span></span><span></span>
+                        <span></span><span></span><span></span>
+                        <span></span><span></span><span></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- 特效部分结束 -->
+
+<!-- 尾部 -->
+<div class="layui-row" style="top: 100px;bottom: 20px">
+    <div class="layui-col-sm12 layui-col-md12 zyl_center zyl_mar_01">
+        <b style="font-size: 15px">© 2020 - 社交网络舆情演化分析平台版权所有</b>
+    </div>
+</div>
+<!-- 尾部结束 -->
+
+<!-- 注册表单 -->
+<div class="zyl_lofo_register">
+    <div id='abc'>
+        <ul>
+            <li id='title'>
+                <p>注册账号</p>
+            </li>
+            <li id='input'>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">账号</label>
+                    <div class="layui-input-block">
+                        <input class="textbox" type="text" required lay-verify="required"
+                               placeholder="请输入账号" autocomplete="off" id="user">
+                        <i class="layui-icon wrong">&#x1006;</i>
+                        <i class="layui-icon correct">&#xe605;</i>
+                        <i class="layui-icon wrong">账号已存在</i>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">密码</label>
+                    <div class="layui-input-block">
+                        <input class="textbox" type="password" required lay-verify="required"
+                               oncopy="return false" placeholder="请输入密码"
+                               autocomplete="off" id="password">
+                        <i class="layui-icon wrong">&#x1006;</i>
+                        <i class="layui-icon wrong"><br>密码为6-16位的数字字母组合</i>
+                        <i class="layui-icon correct">&#xe605;</i>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">确认密码</label>
+                    <div class="layui-input-block">
+                        <input class="textbox" type="password" required lay-verify="required"
+                               oncopy="return false" placeholder="请再次输入密码"
+                               autocomplete="off" id="comform">
+                        <i class="layui-icon wrong">&#x1006;</i>
+                        <i class="layui-icon wrong">密码不一样</i>
+                        <i class="layui-icon correct">&#xe605;</i>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">邮箱</label>
+                    <div class="layui-input-block">
+                        <input class="textbox" type="text" required lay-verify="required"
+                               placeholder="请输入邮箱" autocomplete="off"
+                               id="mail">
+                        <i class="layui-icon wrong">&#x1006;</i>
+                        <i class="layui-icon correct">&#xe605;</i>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">手机号</label>
+                    <div class="layui-input-block">
+                        <input class="textbox" type="text"
+                               placeholder="请输入手机号" autocomplete="off" id="number">
+                        <i class="layui-icon wrong">&#x1006;</i>
+                        <i class="layui-icon correct">&#xe605;</i>
+                        <i class="layui-icon ">非必填</i>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">单位</label>
+                    <div class="layui-input-block">
+                        <input class="textbox" type="text"
+                               placeholder="请输入单位" autocomplete="off" id="unit">
+                        <i class="layui-icon ">非必填</i>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">验证码</label>
+                    <div class="layui-input-block">
+                        <input style="height: 30px;width: 100px" type="text" required lay-verify="required"
+                               placeholder="4位验证码" autocomplete="off" id="check">
+                        <button class="layui-btn layui-btn-primary" style="margin-left: 10px;" id="send">发送验证码</button>
+                        <i class="layui-icon wrong">&#x1006;</i>
+                        <i class="layui-icon correct">&#xe605;</i>
+                    </div>
+                </div>
+            </li>
+            <li id='function'>
+                <button class="layui-btn layui-btn-normal" id="register">注册</button>
+                <button class="layui-btn layui-btn-normal" id="login">已有账号？请登录</button>
+            </li>
+        </ul>
+    </div>
+</div>
+<!-- 注册表单结束 -->
+
+<!-- Jquery Js -->
+<script type="text/javascript" src="../static/js/assembly/jquery.min.js"></script>
+<!-- Jquery.cookie Js-->
+<script src="../static/js/jquery.cookie.js"></script>
+<!-- Layui Js -->
+<script type="text/javascript" src="../static/layui/layui.js"></script>
+<!-- Jqarticle Js -->
+<script type="text/javascript" src="../static/js/assembly/jparticle.min.js"></script>
+<!-- ZylVerificationCode Js-->
+<script type="text/javascript" src="../static/js/assembly/zylVerificationCode.js"></script>
+<script>
+    layui.use(['carousel', 'form'], function () {
+        var carousel = layui.carousel, form = layui.form;
+
+        //设置轮播主体高度
+        var zyl_login_height = $(window).height() / 1.3;
+        var zyl_car_height = $(".zyl_login_height").css("cssText", "height:" + zyl_login_height + "px!important");
+
+
+        //Login轮播主体
+        carousel.render({
+            elem: '#zyllogin'//指向容器选择器
+            , width: '100%' //设置容器宽度
+            , height: 'zyl_car_height'
+            , arrow: 'always' //始终显示箭头
+            , anim: 'fade' //切换动画方式
+            , autoplay: true //是否自动切换false true
+            , arrow: 'hover' //切换箭头默认显示状态||不显示：none||悬停显示：hover||始终显示：always
+            , indicator: 'none' //指示器位置||外部：outside||内部：inside||不显示：none
+            , interval: '5000' //自动切换时间:单位：ms（毫秒）
+        });
+
+        //监听轮播--案例暂未使用
+        carousel.on('change(zyllogin)', function (obj) {
+            var loginCarousel = obj.index;
+        });
+
+        //粒子线条
+        $(".zyl_login_cont").jParticle({
+            background: "rgba(0,0,0,0)",//背景颜色
+            color: "#fff",//粒子和连线的颜色
+            particlesNumber: 100,//粒子数量
+            //disableLinks:true,//禁止粒子间连线
+            //disableMouse:true,//禁止粒子间连线(鼠标)
+            particle: {
+                minSize: 1,//最小粒子
+                maxSize: 3,//最大粒子
+                speed: 30,//粒子的动画速度
+            }
+        });
+
+    });
+
+    'use strict';
+    let code; // 验证码
+    function notice(info) {
+        layui.use('layer', function () {
+            let layer = layui.layer;
+            layer.msg(info);
+        });
+    }
+
+    function regis() {
+        let sign = 0;
+        if ($('#mail').val().trim() === ''||$('#user').val().trim() === ''||$('#password').val().trim() === '') {
+            notice("账号，密码，邮箱为必填项");
+            sign=1
+        }
+
+        if (sign === 0) {
+            sign = 0;
+            {#for (let i = 0; i < $('.correct').length; ++i)#}
+            {#    if ($($('.correct')[i]).css('display') === 'none') {#}
+            {#        notice('信息错误');#}
+            {#        sign = 1;#}
+            {#        break;#}
+            {#    }#}
+            if (sign === 0) {
+                $.ajax({
+                    type: "POST",
+                    url: "/register",
+                    data: {
+                        "user": $('#user').val().trim(),
+                        "password": $('#password').val().trim(),
+                        "mail": $('#mail').val().trim(),
+                        "number": $('#number').val().trim(),
+                        "unit": $('#unit').val().trim()
+                    },
+                    success: function (data) {
+                        if (data.isSuccess === 1) {
+                            notice('注册成功,请登录');
+                            setTimeout(() => {
+                                $(window).attr('location', '/');
+                            }, 2000)
+                        }
+                    },
+                    error: function () {
+                    }
+                })
+            }
+        }
+    }
+
+    $('#user').on('blur', function () {
+        //检查用户名是否重复
+        $(this).siblings('i').hide();
+        if ($(this).val().trim() != '')
+            $.ajax({
+                type: "POST",
+                url: "/checkUser",
+                data: {
+                    "user": $(this).val().trim()
+                },
+                success: function (data) {
+                    if (data.isExist === true) {
+                        $('#user').siblings('.wrong').show();
+                        notice('用户名已存在');
+                    } else
+                        $('#user').siblings('.correct').show();
+                },
+                error: function () {
+                    console.log('error');
+                }
+            })
+    });
+
+    $('#password').on('blur', function () {
+        $(this).siblings('i').hide();
+        if ($(this).val().trim() !== '') {
+            let reg = /^[\w!@#$%^&*]{6,16}$/;
+            if (reg.test($(this).val()))
+                $(this).siblings('.correct').show();
+            else {
+                notice('请输入正确的密码');
+                $(this).siblings('.wrong').show();
+            }
+        }
+    });
+
+    $('#comform').on('blur', function () {
+        $(this).siblings('i').hide();
+        if ($(this).val().trim() !== '') {
+            if ($(this).val() === $('#password').val())
+                $(this).siblings('.correct').show();
+            else
+                $(this).siblings('.wrong').show();
+        }
+    });
+
+    $('#mail').on('blur', function () {
+        $(this).siblings('i').hide();
+        if ($(this).val().trim() != '') {
+            let reg = /^([A-Za-z0-9_\-\.])+\@([A-Za-z0-9_\-\.])+\.([A-Za-z]{2,4})$/;
+            if (reg.test($(this).val()))
+                $(this).siblings('.correct').show();
+            else {
+                notice('请输入正确的邮箱');
+                $(this).siblings('.wrong').show();
+            }
+        }
+    });
+
+    $('#number').on('blur', function () {
+        $(this).siblings('i').hide();
+        if ($(this).val().trim() != '') {
+            let reg = /^(13[0-9]|14[579]|15[0-3,5-9]|16[6]|17[0135678]|18[0-9]|19[89])\d{8}$/;
+            if (reg.test($(this).val()))
+                $(this).siblings('.correct').show();
+            else {
+                notice('请输入正确的手机号');
+                $(this).siblings('.wrong').show();
+            }
+        }
+    });
+
+    $('input').on('keyup', function (e) {
+        if (e.keyCode === 13)
+            regis();
+    });
+
+    $('#register').on('click', () => {
+        regis();
+    });
+    $('#send').on('click', function () {
+        if ($('#mail').val().trim() === ''||$('#user').val().trim() === ''||$('#password').val().trim() === '') {
+            notice("账号，密码，邮箱为必填项");
+        }
+
+        else {
+            $.ajax({
+                type: "POST",
+                url: "/send",
+                data: {
+                    "mail": $('#mail').val().trim(),
+                    "user": $('#user').val().trim(),
+                },
+                success: function (data) {
+                    code = data.code;
+                    console.log(code);
+                },
+                error: function () {
+                }
+            });
+            $(this).attr('disabled', true);
+            let num = 60;
+            $(this).text(num + "后重新发送");
+            $(this).css('cursor', 'default');
+            let timeNo = setInterval(() => {
+                --num;
+                $(this).text(num + "后重新发送");
+                if (num === 0) {
+                    $(this).text('发送验证码');
+                    clearInterval(timeNo);
+                    $(this).attr('disabled', false);
+                }
+            }, 1000);
+        }
+    });
+    $('#check').on('blur', function () {
+        $(this).siblings('i').hide();
+        if (code == $(this).val().trim())
+            $(this).siblings('.correct').show();
+        else
+            $(this).siblings('.wrong').show();
+
+    });
+    $('#login').on('click', () => {
+        $(window).attr('location', '/');
+    })
+
+</script>
+</body>
+</html>

@@ -173,7 +173,14 @@
                                 color: '#ff0000',
                                 type: 'line',
                                 data: step_active_node_sum
-                            }]
+                            },
+                            {
+                                name: '激活比例',
+                                color: '#ff0000',
+                                type: 'line',
+                                data: step_active_node_sum
+                            }
+                            ]
                         });
                     } else {
                         text = "使用" + network_path + "网络，" + "进行" + method + "\n" + "初始活跃用户比例为" + proportion + "\n" +
@@ -183,8 +190,9 @@
                     }
                 }
             }
-        }, 50);
-    } else {
+        }, 500);
+    }
+    else {
         if (err !== "true")//输入错误提示
         {
             layui.use('layer', function () {

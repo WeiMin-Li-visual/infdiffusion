@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html style="height: 100%">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="../static/layui/css/layui.css" media="all">
+    <style>
+        .container {
+            width: 50%;
+            height: 100%;
+            float: left;
+        }
+
+        .control {
+            float: left;
+            margin-top: 20px;
+            width: 24%;
+        }
+    </style>
+</head>
+<body style="height: 100%; margin: 0">
+<div style="height: 20%;">
+    <form class="layui-form" method="post">
+        <div class="control">
+            <label class="layui-form-label">选择比例1</label>
+            <div class="layui-input-block">
+                <input type="text" name="proportion1" placeholder="选择比例1" autocomplete="off" class="layui-input">
+                <i class="layui-icon layui-icon-about" title="请输入0-1之间的数字"></i>
+            </div>
+        </div>
+        <div class="control">
+            <label class="layui-form-label">选择不确定因子1</label>
+            <div class="layui-input-block">
+                <input type="text" name="uncertainty1" placeholder="选择不确定因子1" autocomplete="off" class="layui-input">
+                <i class="layui-icon layui-icon-about" title="请输入大于0的数字"></i>
+            </div>
+        </div>
+        <div class="control">
+            <label class="layui-form-label">选择比例2</label>
+            <div class="layui-input-block">
+                <input type="text" name="proportion2" placeholder="选择比例2" autocomplete="off" class="layui-input">
+                <i class="layui-icon layui-icon-about" title="请输入0-1之间的数字"></i>
+            </div>
+        </div>
+        <div class="control">
+            <label class="layui-form-label">选择不确定因子2</label>
+            <div class="layui-input-block">
+                <input type="text" name="uncertainty2" placeholder="选择不确定因子2" autocomplete="off" class="layui-input">
+                <i class="layui-icon layui-icon-about" title="请输入大于0的数字"></i>
+            </div>
+        </div>
+        <div class="layui-form-item" style="float:right;margin-right:4%;">
+            <div class="layui-input-block">
+                <button class="layui-btn" lay-submit lay-filter="*">提交</button>
+            </div>
+        </div>
+    </form>
+</div>
+<div style="height:80%;">
+    <div id="container1" class="container"></div>
+    <div id="container2" class="container"></div>
+</div>
+<script src="../static/layui/layui.js"></script>
+<script type="text/javascript" src="/static/js/echarts.js"></script>
+<script type="text/javascript" src="/static/js/gt_function.js"></script>
+<script src="../static/js/jquery.js"></script>
+<script src="../static/js/jquery.cookie.js"></script>
+<script type="text/javascript">
+    layui.use('form', function () {
+        var form = layui.form;
+        var layer = layui.layer;
+
+        //各种基于事件的操作
+        form.on('submit(*)', function (data) {
+            if (data.field.proportion1 === "") {
+                layer.msg("请输入比例1");
+                return false;
+            }
+            if (data.field.proportion2 === "") {
+                layer.msg("请输入比例2");
+                return false;
+            }
+            if (data.field.uncertainty1 === "") {
+                layer.msg("请输入不确定因子1");
+                return false;
+            }
+            if (data.field.uncertainty2 === "") {
+                layer.msg("请输入不确定因子2");
+                return false;
+            }
+        });
+    });
+
+    var dom1 = document.getElementById("container1");
+    var graph1 ={{ graph_data | tojson }};
+    var step_active_node1 = {{ step_active_node1 | tojson }};
+    var step_active_node_sum1 = {{ step_active_node_sum1 | tojson }};
+    var steps = step_active_node1.length;
+    var proportion1 ={{ proportion1|tojson }};
+    var uncertainty1 ={{ uncertainty1|tojson }};
+    var err1 ={{ err1 | tojson }};
+    drawGragh(dom1, graph1, err1, step_active_node1, step_active_node_sum1, proportion1, uncertainty1);
+
+    var dom2 = document.getElementById("container2");
+    var graph2 ={{ graph_data | tojson }};
+    var step_active_node2 = {{ step_active_node2 | tojson }};
+    var step_active_node_sum2 = {{ step_active_node_sum2 | tojson }};
+    var proportion2 ={{ proportion2|tojson }};
+    var uncertainty2 ={{ uncertainty2|tojson }};
+    var err2 ={{ err2 | tojson }};
+    drawGragh(dom2, graph2, err2, step_active_node2, step_active_node_sum2, proportion2, uncertainty2);
+
+    function drawGragh(dom, graph, err, step_active_node, step_active_node_sum, proportion, uncertainty) {
+        var myChart = echarts.init(dom);
+        var option;
+        graph = init_graph(graph);   //初始化图数据
+        option = init_option(graph); //初始化属性
+        myChart.setOption(option);   //执行该语句就可以根据你设置的属性进行图的生成
+
+        if (err === "false") {
+            var text = "使用wiki网络，进行协调博弈\n" + "初始活跃用户比例为" + proportion + "\n" +
+                "不确定因子大小为" + uncertainty + "\n" + "第" + 0 + "时间步的扩散过程\n" +
+                "当前时间片共有" + step_active_node[0].length + "个节点进行行为1";
+            var subtext = "";
+            var nodeNum = 0;
+            var count = 0;
+            var index = {{ index|tojson }};
+            update_show(text, subtext, myChart, graph);
+            intervalNo = setInterval(() => {
+                if (count < steps) {
+                    if (nodeNum < step_active_node[count].length) {
+                        var node = step_active_node[count][nodeNum] - index;
+                        graph.nodes[node].category = 1;
+                        graph.nodes[node].symbolSize = 30;
+                        nodeNum++;
+                        myChart.setOption({
+                            title: {
+                                subtext: "当前：" + node + "节点进行行为1",
+                            },
+                            series: [
+                                {
+                                    data: graph.nodes,
+                                    links: graph.links
+                                }
+                            ]
+                        });
+                    } else {
+                        nodeNum = 0;
+                        count++;
+                        console.log(count);
+                        if (count === steps) {
+                            myChart.setOption({
+                                title: {
+                                    text: "使用wiki网络，进行协调博弈，初始活跃用户比例为" + proportion + "，" +
+                                        "不确定因子大小为" + uncertainty + "的行为" + '传播结果图'
+                                },
+                                tooltip: {
+                                    trigger: 'axis',  // 坐标轴触发，主要在柱状图，折线图等会使用类目轴的图表中使用。
+                                },
+                                legend: {
+                                    data: ['step_active_node_sum']
+                                },
+                                xAxis: {
+                                    data: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+                                },
+                                yAxis: {},
+                                series: [{
+                                    name: '激活比例',
+                                    color: '#ff0000',
+                                    type: 'line',
+                                    data: step_active_node_sum
+                                },
+                                    {
+                                        name: '激活比例',
+                                        color: '#ff0000',
+                                        type: 'line',
+                                        data: step_active_node_sum
+                                    }
+                                ]
+                            });
+                        } else {
+                            text = "使用wiki网络，进行协调博弈\n" + "初始活跃用户比例为" + proportion + "\n" +
+                                "不确定因子大小为" + uncertainty + "\n" + "第" + count + "时间步的扩散过程\n" +
+                                "当前时间片共有" + step_active_node[count].length + "个节点进行行为1";
+                            update_show(text, subtext, myChart, graph);
+                        }
+                    }
+                }
+            }, 50);
+        }
+        else {
+            if (err !== "true")//输入错误提示
+            {
+                layui.use('layer', function () {
+                    var layer = layui.layer;
+                    //layer.msg(err);
+                    layer.alert(err,
+                        {icon: 6, title: "提示", offset: "0px", skin: 'layui-layer-molv'})
+                });
+            }
+        }
+    }
+
+    // 更新画面
+    function update_show(text, subtext, myChart, graph) {
+        myChart.setOption({
+            title: {
+                text: text,
+                subtext: subtext
+            },
+            series: [{
+                data: graph.nodes,
+                links: graph.links
+            }]
+        })
+    }
+
+</script>
+</body>
+</html>

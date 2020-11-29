@@ -35,12 +35,17 @@
             <div class="layui-card">
                 <div class="layui-collapse" lay-accordion style="background-color: #f8f8f8">
                     <div class="layui-colla-item" style="color: #000000;">
-                        <div class="layui-colla-title" style="background-color: #f8f8f8;font-size:30px; font-weight: bold; color: #000000;">
+                        <div class="layui-colla-title" style="background-color: #f8f8f8;font-size:20px; font-weight: bold; color: #000000;">
                                 不确定环境下基于博弈论的行为传播模型
                         </div>
                         <div class="layui-colla-content layui-show"
-                             style="background-color:#f8f8f8; overflow:auto; width:1400px; height:180px; font-size:18px; color: #000000; line-height:25pt; text-align: justify; text-indent: 2em;">
-                            与传统的流行性病毒传播不同，社交网络中的行为扩散是由理性用户进行的，他们不会以一定的概率随机感染，而是会做出战略选择。具体而言，个体总是试图通过理性选择特定行为来最大化自己的效用(采用新产品，散布谣言等)。然而，个体获得的效用自然包含着不确定性，它可能来自两个来源：使用者对他人的不完善和不完全的认识，以及人类行为固有的随机性。因此，对由此产生的不确定性下的社交网络中的扩散模式进行建模和分析是势在必行的，而现有的工作尚未对这一问题进行深入研究。本文深入探讨了当用户决策存在不确定性时，社交网络中的八卦的扩散模式。具体而言，本文的创新成果是：首先，受随机效用理论的启发，我们构建了基于混合logit模型的扩散模型，该模型考虑了用户在决定是否采取特定策略时的不确定性；其次，利用均值场论的近似方法，导出了描述扩散过程的形式分析框架；最后，我们通过将社交网络中的谣言扩散建模为一个协调博弈来探讨我们所提出的分析框架的广泛适用性。我们的发现是，对于不同的结构特征，小的不确定性可以显著加速流言的传播；此外，无尺度属性的社交网络最容易促进闲话扩散，而最大限度地促进闲话扩散的不确定性因素范围最小。所得的结果完全符合现实社会中谣言传播的哲学说法：来得容易去得快。
+                             style="background-color:#f8f8f8; overflow:auto; width:1750px; height:100px; font-size:18px; color: #000000; line-height:25pt; text-align: justify; text-indent: 2em;">
+                            与传统的流行性病毒传播不同，社交网络中的行为传播是由理性用户进行的，他们不会以一定的概率随机感染，而是会做出战略选择。
+                            具体而言，个体总是试图通过理性选择特定行为来最大化自己的效用(采用新产品，散布谣言等)。
+                            博弈论模型可以可以很好的建模个体理性的行为选择。
+                            同时，个体获得的效用自然包含着不确定性，它可能来自两个来源：使用者对他人的不完善和不完全的认识，以及人类行为固有的随机性。
+                            因此，对由此产生的不确定性下的社交网络中的行为扩散进行建模和分析是势在必行的，而现有的工作尚未对这一问题进行深入研究。
+                            该模型探讨了当用户决策存在不确定性时，基于博弈论的社交网络中行为传播模型。<br>
                         </div>
                     </div>
                 </div>
@@ -49,8 +54,9 @@
                 <div class="layui-carousel" id="lunbotu" style="margin:0 auto; " lay-anim="" lay-indicator="inside"
                      lay-arrow="hover">
                     <div carousel-item align="center">
-                        <div class="layui-this"><img src="../static/image/SI传播结果.PNG" style="margin:0 auto;"></div>
-                        <div class=""><img src="../static/image/SI_process.PNG" style="margin:0 auto;"></div>
+                        <div class="layui-this"><img src="../static/image/gametheory_result/wiki0.1_0.1.jpg" style="width: 100%;height:100%"></div>
+                        <div class=""><img src="../static/image/gametheory_result/wiki0.1_1.jpg" style="width: 100%;height:100%"></div>
+                        <div class=""><img src="../static/image/gametheory_result/comparison.jpg" style="width: 100%;height:100%"></div>
                     </div>
                 </div>
             </div>
@@ -67,7 +73,7 @@
             , anim: 'fade'       //轮播切换动画方式
             , margin: 'auto'
             , width: '1400px'     //设置容器宽度
-            , height: '800px'     //设定轮播容器高度
+            , height: '640px'     //设定轮播容器高度
             , arrow: 'always'     //始终显示箭头
             , indicator: 'none'   //指示器位置:不显示
             , interval: '3000'    //自动切换的时间间隔

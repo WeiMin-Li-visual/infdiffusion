@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>登录界面</title>
+    <link rel="stylesheet" href="../static/layui/css/layui.css">
+    <link rel="icon" href="../static/image/icon/logo.ico" type="image/x-icon">
+    <link rel="stylesheet" href="../static/css/login.css" media="all">
+
+    <style>
+        /* 覆盖原框架样式 */
+        .layui-elem-quote {
+            background-color: inherit !important;
+        }
+
+        .layui-input, .layui-select, .layui-textarea {
+            background-color: inherit;
+            padding-left: 30px;
+        }
+
+        li {
+            list-style: none;
+        }
+
+        #abc {
+            top: 10px;
+            width: 450px;
+            height: 400px;
+            border: 0.5px solid black;
+            margin: 0.5px auto;
+        }
+
+        #title {
+            height: 100px;
+        }
+
+        #title p {
+            font-size: 20px;
+            text-align: center;
+            line-height: 100px;
+            font-weight: 700;
+        }
+
+        #login,
+        #register,
+        #forget {
+            width: 60%;
+            height: 40px;
+            display: block;
+            margin: 15px auto;
+            border-radius: 10px;
+        }
+
+        #save {
+            padding-left: 250px;
+        }
+
+        #save span {
+            font-size: 10px;
+        }
+
+        #check {
+            position: relative;
+            top: 1px;
+        }
+    </style>
+</head>
+<body>
+<!-- 头部 -->
+<div class="layui-fluid" style="top: 10px;bottom: 20px">
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-sm12 layui-col-md12 zyl_mar_01">
+            <blockquote class="layui-elem-quote"><b style="font-size: 30px">社交网络舆情演化分析平台 | </b>
+                <b style="font-size: 20px"> 登陆界面</b></blockquote>
+        </div>
+    </div>
+</div>
+<!-- 头部结束 -->
+
+<!-- 特效部分 -->
+<div class="layui-row" style="top: 20px;bottom: 20px">
+    <div class="layui-col-sm12 layui-col-md12">
+        <div class="layui-carousel zyl_login_height" id="zyllogin" lay-filter="zyllogin">
+            <div carousel-item="">
+                <div>
+                    <div class="zyl_login_cont"></div>
+                </div>
+                <div>
+                    <div class="background">
+                        <span></span><span></span><span></span>
+                        <span></span><span></span><span></span>
+                        <span></span><span></span><span></span>
+                        <span></span><span></span><span></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- 特效部分结束 -->
+
+<!-- 尾部 -->
+<div class="layui-row" style="top: 20px;bottom: 20px">
+    <div class="layui-col-sm12 layui-col-md12 zyl_center zyl_mar_01">
+        <b style="font-size: 15px">© 2020 - 社交网络舆情演化分析平台版权所有</b>
+    </div>
+</div>
+<!-- 尾部结束 -->
+
+<!-- 登录表单 -->
+<div class="zyl_lofo_main">
+    <div id='abc'>
+        <ul>
+            <li id='title'>
+                <p>欢迎登陆舆情演化分析平台</p>
+            </li>
+            <li id='input'>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">账号</label>
+                    <div class="layui-input-block">
+                        <!-- required 表示在提交之前必须填写输入字段 -->
+                        <input type="text" required lay-verify="required" placeholder="请输入账号" autocomplete="off"
+                               class="layui-input" style="width: 70%;" id="user">
+                        <i class="layui-icon layui-icon-username zyl_lofo_icon"></i>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">密码</label>
+                    <div class="layui-input-inline">
+                        <input type="password" required lay-verify="required" oncopy="return false" placeholder="请输入密码"
+                               style="width: 125%;"
+                               autocomplete="off" class="layui-input" id="password">
+                        <i class="layui-icon layui-icon-password zyl_lofo_icon"></i>
+                    </div>
+                </div>
+                <div id="save">
+                    <input type="checkbox" id="check">
+                    <span>保持登陆状态</span>
+                </div>
+            </li>
+            <li id='function'>
+                <button class="layui-btn layui-btn-normal" id="login">登陆</button>
+                <button class="layui-btn layui-btn-normal" id="register">注册</button>
+                <button class="layui-btn layui-btn-normal" id="forget">忘记密码</button>
+            </li>
+        </ul>
+    </div>
+</div>
+<!-- 登录表单结束 -->
+
+<!-- Jquery Js -->
+<script type="text/javascript" src="../static/js/assembly/jquery.min.js"></script>
+<!-- Jquery.cookie Js-->
+<script src="../static/js/jquery.cookie.js"></script>
+<!-- Layui Js -->
+<script type="text/javascript" src="../static/layui/layui.js"></script>
+<!-- Jqarticle Js -->
+<script type="text/javascript" src="../static/js/assembly/jparticle.min.js"></script>
+<!-- ZylVerificationCode Js-->
+<script type="text/javascript" src="../static/js/assembly/zylVerificationCode.js"></script>
+<script>
+    {#    Layui中轮播图切换函数   #}
+    layui.use(['carousel', 'form'], function () {
+        var carousel = layui.carousel, form = layui.form;
+
+        //设置轮播主体高度
+        var zyl_login_height = $(window).height() / 1.3;
+        var zyl_car_height = $(".zyl_login_height").css("cssText", "height:" + zyl_login_height + "px!important");
+
+
+        //Login轮播主体
+        carousel.render({
+            elem: '#zyllogin'//指向容器选择器
+            , width: '100%' //设置容器宽度
+            , height: 'zyl_car_height'
+            , arrow: 'always' //始终显示箭头
+            , anim: 'fade' //切换动画方式
+            , autoplay: true //是否自动切换false true
+            , arrow: 'hover' //切换箭头默认显示状态||不显示：none||悬停显示：hover||始终显示：always
+            , indicator: 'none' //指示器位置||外部：outside||内部：inside||不显示：none
+            , interval: '5000' //自动切换时间:单位：ms（毫秒）
+        });
+
+        //监听轮播--案例暂未使用
+        carousel.on('change(zyllogin)', function (obj) {
+            var loginCarousel = obj.index;
+        });
+
+        //粒子线条
+        $(".zyl_login_cont").jParticle({
+            background: "rgba(0,0,0,0)",//背景颜色
+            color: "#fff",//粒子和连线的颜色
+            particlesNumber: 100,//粒子数量
+            //disableLinks:true,//禁止粒子间连线
+            //disableMouse:true,//禁止粒子间连线(鼠标)
+            particle: {
+                minSize: 1,//最小粒子
+                maxSize: 3,//最大粒子
+                speed: 30,//粒子的动画速度
+            }
+        });
+    });
+
+    'use strict';
+    {# 使用cookie #}
+    {#(() => {#}
+    {#    let cookie = $.cookie('user');#}
+    {#    console.log(cookie);#}
+    {#    if (cookie !== undefined && cookie !== '')#}
+    {#        $(window).attr('location', '/index');#}
+    {#})
+    ();
+    #}
+
+    function notice(info) {
+        layui.use('layer', function () {
+            let layer = layui.layer;
+            layer.msg(info);
+        });
+    }
+
+    function login() {
+        if ($('#user').val().trim() !== '' && $('#password').val().trim() !== '')
+            $.ajax({
+                type: "POST",
+                url: "",
+                data: {
+                    "user": $('#user').val().trim(),
+                    "password": $('#password').val().trim(),
+                },
+                success: function (data) {
+                    let check = JSON.parse(data.check);
+                    {#if(check['usps']===-1)#}
+                    {#    notice('请输入用户名和密码');#}
+                    if (check['userInfo'] === -1)
+                        notice('用户未注册，请进行注册');
+                    else if (check['userInfo'] === 1)
+                        notice('邮箱未验证，请进行验证');
+                    else {
+                        if (check['passwordInfo'] === 0)
+                            notice('密码错误');
+                        if (check['passwordInfo'] === 1) {
+                            if ($('#check').prop('checked'))
+                                $.cookie('user', $('#user').val().trim(), {expires: 7});
+                            else
+                                $.cookie('user', $('#user').val().trim());
+                            $(window).attr('location', '/index');
+                        }
+                    }
+                },
+                error: function () {
+                    console.log('error');
+                }
+            });
+        else if ($('#user').val().trim() === '' && $('#password').val().trim() !== '') {
+            notice("未填写用户名")
+        } else if ($('#user').val().trim() !== '' && $('#password').val().trim() === '') {
+            notice("未填写密码")
+        } else {
+            notice("请输入用户名和密码")
+        }
+    }
+
+    $('input').on('keyup', function (e) {
+        if (e.keyCode === 13)
+            login();
+    });
+    $('#login').on('click', () => {
+        login();
+    });
+    $('#register').on('click', function () {
+        $(window).attr('location', '/register');
+    });
+    $('#forget').on('click', function () {
+        $(window).attr('location', '/forget');
+    });
+
+</script>
+</body>
+</html>
