@@ -1,10 +1,186 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <title>添加网络</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>注销账号界面</title>
+    <link rel="stylesheet" href="../static/layui/css/layui.css">
+    <link rel="icon" href="../static/image/icon/logo.ico" type="image/x-icon">
+    <link rel="stylesheet" href="../static/css/login.css" media="all">
+
+    <style>
+        /* 覆盖原框架样式 */
+        .layui-elem-quote {
+            background-color: inherit !important;
+        }
+
+        .layui-input, .layui-select, .layui-textarea {
+            background-color: inherit;
+            padding-left: 30px;
+        }
+
+        li {
+            height: 180px;
+            list-style: none;
+        }
+
+        #first {
+            width: 400px;
+            height: 350px;
+            border: 1px solid black;
+            margin: 0px auto;
+        }
+
+        #title {
+            height: 60px;
+        }
+
+        #title p {
+            font-size: 20px;
+            text-align: center;
+            line-height: 70px;
+            font-weight: 700;
+        }
+
+        input {
+            height: 38px;
+            line-height: 1.3;
+            line-height: 38px \9;
+            border: 1px solid #ccc;
+            background-color: #fff;
+            border-radius: 2px;
+            padding-left: 10px;
+            width: 20%;
+        }
+
+
+        #upload {
+            height: 38px;
+            text-align: center
+        }
+
+        #confirm,
+        #cancel {
+            top: 10px;
+            width: 60%;
+            display: block;
+            margin: 10px auto;
+            border-radius: 10px;
+        }
+
+        .wrong,
+        .correct {
+            font-size: 14px;
+            font-weight: 500;
+            display: none;
+        }
+
+        .correct {
+            color: green;
+        }
+
+        .wrong {
+            color: red;
+        }
+
+        .yanwrong,
+        .yancorrect {
+            font-size: 14px;
+            font-weight: 500;
+            display: none;
+        }
+
+        .yancorrect {
+            color: green;
+        }
+
+        .yanwrong {
+            color: red;
+        }
+
+    </style>
 </head>
 <body>
 
+<!-- 表单开始 -->
+<div style="padding: 20px; background-color: #e3e3e3;">
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-md12">
+            <div class="layui-card">
+                <div class="layui-collapse" lay-accordion style="background-color: #f8f8f8">
+                    <div class="layui-colla-item" style="color: #000000;">
+                        <div class="layui-colla-content layui-show"
+                             style="background-color:#f8f8f8; overflow:auto; width:1750px; height:795px; font-size:18px; color: #000000; line-height:25pt; text-align: justify; text-indent: 2em;">
+                            &nbsp;<br>
+                            <form action="/addNetwork" method="post" enctype="multipart/form-data">
+{#                                <label class="layui-form-label" style="width: 200px">输入网络结构名称:</label>#}
+{#                                <i class="layui-icon wrong">&#x1006;</i>#}
+{#                                <i class="layui-icon correct">&#xe605;</i>#}
+{#                                <i class="layui-icon wrong">网络结构名已存在</i>#}
+                                <input type='text' name='textfield' id='textfield' class='txt'/>
+                                <input type="file" name="fileField" class="file" id="fileField" size="28"
+                                    onchange="document.getElementById('textfield').value=this.value"/>
+                                <button class="layui-btn layui-btn-normal">上传</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- 表单结束 -->
+
+<!-- Jquery Js -->
+<script type="text/javascript" src="../static/js/assembly/jquery.min.js"></script>
+<!-- Layui Js -->
+<script type="text/javascript" src="../static/layui/layui.js"></script>
+<!-- Jqarticle Js -->
+<script type="text/javascript" src="../static/js/assembly/jparticle.min.js"></script>
+<!-- ZylVerificationCode Js-->
+<script type="text/javascript" src="../static/js/assembly/zylVerificationCode.js"></script>
+<script src="../static/js/jquery.cookie.js"></script>
+<script>
+    layui.use('form', function () {
+        var form = layui.form;
+        form.render();
+    });
+    var err ={{err|tojson}};
+
+    if (err !== "true") {
+        layui.use('layer', function () {
+            var layer = layui.layer;
+            //layer.msg(err);
+            layer.alert(err,
+                {icon: 6, title: "提示", offset: "0px", skin: 'layui-layer-molv'})
+        });
+    }
+
+    {#$('#textfield').on('blur', function () {#}
+    {#    //检查网络结构名是否重复#}
+    {#    $(this).siblings('i').hide();#}
+    {#    if ($(this).val().trim() !== '') {#}
+    {#        $.ajax({#}
+    {#            type: "POST",#}
+    {#            url: "/checkNetworkName",#}
+    {#            data: {#}
+    {#                "textfield": $(this).val().trim()#}
+    {#            },#}
+    {#            success: function (data) {#}
+    {#                if (data.isExist === true) {#}
+    {#                    $('#textfield').siblings('.wrong').show();#}
+    {#                    notice('网络结构名已存在');#}
+    {#                } else#}
+    {#                    $('#textfield').siblings('.correct').show();#}
+    {#            },#}
+    {#            error: function () {#}
+    {#                console.log('error');#}
+    {#            }#}
+    {#        })#}
+    {#    }#}
+    {#});#}
+
+
+</script>
 </body>
 </html>

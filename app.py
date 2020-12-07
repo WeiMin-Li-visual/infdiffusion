@@ -1,5 +1,5 @@
 # -*- coding:utf-8 -*-
-from flask import Flask, render_template, request,jsonify
+from flask import Flask, render_template, request, jsonify
 from flask_socketio import SocketIO
 from threading import Lock
 from algorithm import gameTheory
@@ -13,9 +13,13 @@ import copy
 import networkx as nx
 from flask_socketio import SocketIO
 from threading import Lock
-import re
 from flask_mail import Mail, Message
 import pymysql
+import requests
+import os
+import io
+import datetime
+import re
 
 thread_lock = Lock()
 
@@ -32,12 +36,13 @@ cur = connection.cursor()  # 执行完毕返回的结果集默认以元组显示
 cur.execute('use po_evolution_platform')  # 执行SQL语句
 
 # 配置Flask-Mail
-app.config['MAIL_SERVER'] = 'smtp.qq.com'   # 邮箱服务器
-app.config['MAIL_PORT'] = 587   # 端口
-app.config['MAIL_USE_TLS'] = True   # 是否使用TLS
-app.config['MAIL_USERNAME'] = '1830601430@qq.com'   # 邮箱
-app.config['MAIL_PASSWORD'] = 'xxnglsfenzxsehgi'   # 授权码
+app.config['MAIL_SERVER'] = 'smtp.qq.com'  # 邮箱服务器
+app.config['MAIL_PORT'] = 587  # 端口
+app.config['MAIL_USE_TLS'] = True  # 是否使用TLS
+app.config['MAIL_USERNAME'] = '1830601430@qq.com'  # 邮箱
+app.config['MAIL_PASSWORD'] = 'xxnglsfenzxsehgi'  # 授权码
 mail = Mail(app)
+
 
 # 检测用户名是否存在
 @app.route('/checkUser', methods=["POST"])
@@ -53,6 +58,22 @@ def checkUser():
         elif result is not None:
             return jsonify({'isExist': True})
 
+
+# 检测邮箱是否和账号相对应
+@app.route('/checkMail', methods=["POST"])
+def checkMail():
+    if request.method == 'POST':
+        cur.execute('use po_evolution_platform')
+        requestArgs = request.values
+        user = requestArgs.get('user')
+        mail = requestArgs.get('mail')
+        cur.execute("select mail from users where user = " + "'" + user + "'")
+        result = cur.fetchone()  # 获取查询结果
+        if result is not None and mail == result[0]:
+            return jsonify({'isExist': True})
+        return jsonify({'isExist': False})
+
+
 # 修改密码
 @app.route('/forget', methods=["GET", "POST"])
 def forget():
@@ -66,6 +87,7 @@ def forget():
         connection.commit()
         return jsonify({'isSuccess': 1})
 
+
 # 注册账号
 @app.route('/register', methods=["GET", "POST"])
 def register():
@@ -78,11 +100,13 @@ def register():
         number = requestArgs.get('number')
         unit = requestArgs.get('unit')
         mail = requestArgs.get('mail')
-        str = "'" + user + "'" + ",'" + number + "'," + "'" + mail + "'" + "," \
-              + "'" + unit + "'" + "," + "MD5('" + password + "')"
-        cur.execute('insert into users (user,number,mail,unit,password) values (' + str + ")")
+        role = '1'  # 默认普通用户
+        str1 = "'" + user + "'" + ",'" + number + "'," + "'" + mail + "'" + "," \
+               + "'" + unit + "'" + "," + "MD5('" + password + "')" + ",1"
+        cur.execute('insert into users (user,number,mail,unit,password,role_id) values (' + str1 + ")")
         connection.commit()
         return jsonify({'isSuccess': 1})
+
 
 # 通过邮件发送验证码
 @app.route('/send', methods=["POST"])
@@ -98,12 +122,13 @@ def send():
     for i in range(4):
         veriCode += verificationList[random.randint(0, len(verificationList) - 1)]
     msg = Message(subject="舆情演化平台验证码", sender="1830601430@qq.com", recipients=[dirMail])
-    msg.body = "你好，"+user+":\n"+"感谢你使用我们的社交网络舆情演化与分析平台"+"\n"+"你的验证码是：\n"+veriCode   # 验证码主体
+    msg.body = "你好，" + user + ":\n" + "感谢你使用我们的社交网络舆情演化与分析平台" + "\n" + "你的验证码是：\n" + veriCode  # 验证码主体
     mail.send(msg)  # 发送邮件
     return jsonify({'code': veriCode, 'ischecked': 1})
 
+
 # 登录界面，最后发布将其调整为主界面
-@app.route('/login', methods=["GET", "POST"])
+@app.route('/', methods=["GET", "POST"])
 def login():
     if request.method == 'GET':
         cur.execute('use po_evolution_platform')
@@ -132,6 +157,7 @@ def login():
         check = json.dumps(check)
         return jsonify({'check': check})
 
+
 @app.route('/fun', methods=["POST"])
 def fun():
     requestArgs = request.values
@@ -140,8 +166,50 @@ def fun():
     result = cur.fetchone()
     return jsonify({'user': result})
 
+
+# 注销账号
+@app.route('/deleteUserInfo', methods=["GET", "POST"])
+def deleteUserInfo():
+    if request.method == 'GET':
+        return render_template('deleteUserInfo.html')
+    elif request.method == 'POST':
+        requestArgs = request.values
+        user = requestArgs.get('user')
+        cur.execute("select user from users where user = " + "'" + user + "'")
+        result = cur.fetchone()
+        print(result)
+        if result is not None:
+            cur.execute("delete from users where user = " + "'" + user + "'")
+            connection.commit()
+            return jsonify({'isSuccess': 1})
+        return jsonify({'isSuccess': 0})
+
+
+# 获得session
+@app.route('/getSessionUser', methods=["GET", "POST"])
+def getSessionUser():
+    user = request.cookies['user']
+    cur.execute("select * from users where user = " + "'" + user + "'")
+    result = cur.fetchone()
+
+    number = "xxx"
+    mail = "xxx"
+    unit = "xxx"
+
+    if result[2] != '':
+        number = result[2]
+    if result[3] != '':
+        mail = result[3]
+    if result[4] != '':
+        unit = result[4]
+
+    if result is not None:
+        return jsonify({'user': user, 'number': number, 'mail': mail, 'unit': unit, 'isSuccess': 1})
+    return jsonify({'isSuccess': 0})
+
+
 # 主界面
-@app.route('/')
+@app.route('/index')
 def index():
     return render_template('index.html')
 
@@ -179,14 +247,108 @@ def joinIn():
     return render_template('joinIn.html')
 
 
+# 检测网络结构名是否存在
+@app.route('/checkNetworkName', methods=["POST"])
+def checkNetworkName():
+    if request.method == 'POST':
+        cur.execute('use po_evolution_platform')
+        requestArgs = request.values
+        dataname = requestArgs.get('textfield')
+        user = request.cookies['user']
+        cur.execute("select dataname from datas where user = " + "'" + user + "'")
+        result = cur.fetchone()  # 获取查询结果
+        if result is not None and dataname in result:
+            return jsonify({'isExist': True})
+
+        cur.execute("select dataname from datas where role_id = 2")
+        result = cur.fetchone()
+        if result is not None and dataname in result:
+            return jsonify({'isExist': True})
+        return jsonify({'isExist': False})
+
+
 # 用户可以自己添加网络
-@app.route('/addNetwork')
+@app.route('/addNetwork', methods=["GET", "POST"])
 def addNetwork():
-    '''
-    TODO
-    :return:
-    '''
-    return render_template('addNetwork.html')
+    err = "false"
+    if request.method == 'GET':
+        err = "true"
+        cur.execute('use po_evolution_platform')
+        return render_template('addNetwork.html', err=err)
+    elif request.method == 'POST':
+        base_path = os.path.dirname(os.path.realpath(__file__)) + "\static\data"
+        upload_path = os.path.join(base_path, 'upload')  # 上传文件目录
+        if not os.path.exists(upload_path):
+            os.makedirs(upload_path)
+
+        """处理上传文件"""
+        filedata = request.files.get('fileField')
+        filename = request.values.get('textfield')
+
+        if filename == '':
+            err = "请选择文件!"
+        elif filename[-4:] != '.txt':
+            err = "文件不符合格式！"
+        else:
+            file_path = None
+
+            flag=0
+            cur.execute('use po_evolution_platform')
+            dataname = filename.split("\\")[-1].split(".")[0]
+            user = request.cookies['user']
+            cur.execute("select dataname from datas where user = " + "'" + user + "'")
+            result = cur.fetchone()
+            if result is not None and dataname in result:
+                flag=1
+                err = "网络结构已存在"
+
+            cur.execute("select dataname from datas where role_id = 2")
+            result = cur.fetchone()
+            if result is not None and dataname in result:
+                flag=1
+                err = "网络结构已存在"
+
+            if flag==0:
+                try:
+                    time = str(datetime.datetime.now())
+                    time = time.replace(' ', '_').replace('-', '_').replace(':', '_').replace('.', '_') + '.txt'
+                    file_path = os.path.join(upload_path, time)
+                    filedata = str(filedata.read())
+                    print(filedata)
+                    file = filedata[2:-2].replace("\\t", ",").replace("\\r", "").split("\\n")
+                    with open(file_path, 'w') as writef:
+                        for row in file:
+                            row = row.strip("'").split(",")
+                            temp = []
+
+                            # \d+ 匹配字符串中的数字部分，返回列表
+                            num1 = re.findall('\d+', row[0])
+                            num2 = re.findall('\d+', row[0])
+                            if (len(num1) != 1 or len(num2) != 1):
+                                err = "文件不符合格式！"
+                                break
+                            temp.append(num1[0])
+                            temp.append(num2[0])
+                            writef.write("\t".join(temp))
+                            writef.write("\n")
+
+                    if (err == "文件不符合格式！"):
+                        os.remove(file_path)
+                except IOError:
+                    err = "上传失败！"
+                err = "上传成功！"
+
+            if err == "上传成功！":
+                dataname = filename.split("\\")[-1].split(".")[0]
+                user = request.cookies['user']
+                cur.execute("select role_id from users where user = " + "'" + user + "'")
+                result = cur.fetchone()
+                str1 = "'" + dataname + "'" + ",'" + user + "'," + "'" + file_path + "'" + "," \
+                       + "'" + str(result[0]) + "'"
+                cur.execute('insert into datas (dataname,user,data_path,role_id) values (' + str1 + ")")
+                connection.commit()
+
+    return render_template('addNetwork.html', err=err)
 
 
 # 舆情演化

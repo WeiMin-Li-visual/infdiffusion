@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-    <title>注册界面</title>
+    <title>注销账号界面</title>
     <link rel="stylesheet" href="../static/layui/css/layui.css">
     <link rel="icon" href="../static/image/icon/logo.ico" type="image/x-icon">
     <link rel="stylesheet" href="../static/css/login.css" media="all">
@@ -20,25 +20,25 @@
         }
 
         li {
+            height: 180px;
             list-style: none;
         }
 
-        #first,
-        #second {
+        #first {
             width: 400px;
-            height: 320px;
+            height: 350px;
             border: 1px solid black;
             margin: 0px auto;
         }
 
         #title {
-            height: 80px;
+            height: 60px;
         }
 
         #title p {
             font-size: 20px;
             text-align: center;
-            line-height: 100px;
+            line-height: 70px;
             font-weight: 700;
         }
 
@@ -53,8 +53,9 @@
             width: 66%;
         }
 
-        #next,
-        #complete {
+        #confirm,
+        #cancel {
+            top: 10px;
             width: 60%;
             display: block;
             margin: 10px auto;
@@ -76,9 +77,21 @@
             color: red;
         }
 
-        #second {
+        .yanwrong,
+        .yancorrect {
+            font-size: 14px;
+            font-weight: 500;
             display: none;
         }
+
+        .yancorrect {
+            color: green;
+        }
+
+        .yanwrong {
+            color: red;
+        }
+
     </style>
 </head>
 <body>
@@ -86,13 +99,13 @@
 <div class="layui-fluid">
     <div class="layui-row layui-col-space15">
         <div class="layui-col-sm12 layui-col-md12 zyl_mar_01">
-            <blockquote class="layui-elem-quote"><b style="font-size: 20px">您正在修改密码，请谨慎操作</b></blockquote>
+            <blockquote class="layui-elem-quote"><b style="font-size: 20px">您正在注销账号，请谨慎操作！</b></blockquote>
         </div>
     </div>
 </div>
 <!-- 头部结束 -->
 
-<!-- 特效部分开始 -->
+<!-- 特效开始 -->
 <div class="layui-row">
     <div class="layui-col-sm12 layui-col-md12">
         <div class="layui-carousel zyl_login_height" id="zyllogin" lay-filter="zyllogin">
@@ -112,7 +125,7 @@
         </div>
     </div>
 </div>
-<!-- 特效部分结束 -->
+<!-- 特效结束 -->
 
 <!-- 尾部开始 -->
 <div class="layui-row" style="top: 100px;bottom: 20px">
@@ -123,11 +136,11 @@
 <!-- 尾部结束 -->
 
 <!-- 表单开始 -->
-<div class="zyl_lofo_forget">
+<div class="zyl_lofo_delete">
     <div id='first'>
         <ul>
             <li id='title'>
-                <p>修改密码</p>
+                <p>注销账号</p>
             </li>
             <li id='input'>
                 <div class="layui-form-item">
@@ -137,7 +150,7 @@
                                id="user">
                         <i class="layui-icon wrong">&#x1006;</i>
                         <i class="layui-icon correct">&#xe605;</i>
-                        <i class="layui-icon wrong"><br>账号不存在</i>
+                        <i class="layui-icon wrong"><br>账号不正确</i>
                     </div>
                 </div>
                 <div class="layui-form-item">
@@ -145,6 +158,9 @@
                     <div class="layui-input-block">
                         <input type="text" required lay-verify="required" placeholder="请输入邮箱" autocomplete="off"
                                id="mail">
+                        <i class="layui-icon wrong">&#x1006;</i>
+                        <i class="layui-icon correct">&#xe605;</i>
+                        <i class="layui-icon wrong"><br>邮箱不正确</i>
                     </div>
                 </div>
                 <div class="layui-form-item">
@@ -153,45 +169,15 @@
                         <input type="text" required lay-verify="required" placeholder="4位验证码" autocomplete="off"
                                id="check" style="width: 30%;">
                         <button class="layui-btn layui-btn-primary" style="margin-left: 10px;" id="send">发送验证码</button>
-                        <i class="layui-icon wrong">&#x1006;</i>
-                        <i class="layui-icon correct">&#xe605;</i>
-                        <i class="layui-icon wrong"><br>验证码不正确</i>
+                        <i class="layui-icon yanwrong">&#x1006;</i>
+                        <i class="layui-icon yancorrect">&#xe605;</i>
+                        <i class="layui-icon yanwrong"><br>验证码错误</i>
                     </div>
                 </div>
             </li>
             <li id='function'>
-                <button class="layui-btn layui-btn-normal" id="next">下一步</button>
-            </li>
-        </ul>
-    </div>
-    <div id='second'>
-        <ul>
-            <li id='title'>
-                <p>修改密码</p>
-            </li>
-            <li id='input'>
-                <div class="layui-form-item">
-                    <label class="layui-form-label">新密码</label>
-                    <div class="layui-input-block">
-                        <input type="password" required lay-verify="required" oncopy="return false" placeholder="请输入密码"
-                               autocomplete="off" id="npw">
-                        <i class="layui-icon wrong">&#x1006;</i>
-                        <i class="layui-icon correct">&#xe605;</i>
-                        <i class="layui-icon wrong"><br>密码为6-16位的数字字母组合</i>
-                    </div>
-                </div>
-                <div class="layui-form-item">
-                    <label class="layui-form-label">确认密码</label>
-                    <div class="layui-input-block">
-                        <input type="password" required lay-verify="required" oncopy="return false"
-                               placeholder="请再次输入密码" autocomplete="off" id="confirm">
-                        <i class="layui-icon wrong">&#x1006;</i>
-                        <i class="layui-icon correct">&#xe605;</i>
-                    </div>
-                </div>
-            </li>
-            <li id='function'>
-                <button class="layui-btn layui-btn-normal" id="complete">完成</button>
+                <button class="layui-btn layui-btn-normal" id="confirm">确定</button>
+                <button class="layui-btn layui-btn-normal" id="cancel">取消</button>
             </li>
         </ul>
     </div>
@@ -259,147 +245,170 @@
         });
     }
 
-    function next() {
-        let sign = true;
-        for (let i = 0; i < $('#first .correct').length; ++i) {
-            if ($($('#first .correct')[i]).css('display') === 'none') {
-                notice('请输入正确的信息');
-                sign = false;
-                break;
-            }
-        }
-        if (sign) {
-            $('#first').hide().siblings('#second').show();
-        }
-    }
-
-    function com() {
-        let sign = true;
-        for (let i = 0; i < $('#second .correct').length; ++i) {
-            if ($($('#second .correct')[i]).css('display') === 'none') {
-                notice('请输入正确的信息');
-                sign = false;
-                break;
-            }
-        }
-        if (sign) {
-            $.ajax({
-                type: "POST",
-                url: "/forget",
-                data: {
-                    "password": $('#npw').val().trim(),
-                    "user": $('#user').val().trim()
-                },
-                success: function () {
-                    notice('修改成功，即将跳转至登陆页面');
-                    setTimeout(() => {
-                        $(window).attr('location', '/');
-                    }, 1000);
-                },
-                error: function () {
-                    console.log('error');
-                }
-            })
-        }
-    }
-
-    let code;
     $('#user').on('blur', function () {
         //检查用户名是否重复
         $(this).siblings('i').hide();
         if ($(this).val().trim() !== '')
+
+            if ($(this).val().trim() !== $.cookie('user')) {
+                $('#user').siblings('.wrong').show();
+                {#notice('账号不正确');#}
+            } else {
+                $.ajax({
+                    type: "POST",
+                    url: "/checkUser",
+                    data: {
+                        "user": $(this).val().trim()
+                    },
+                    success: function (data) {
+                        if (data.isExist === false) {
+                            $('#user').siblings('.wrong').show();
+                            notice('账号不存在');
+                        } else
+                            $('#user').siblings('.correct').show();
+                    },
+                    error: function () {
+                        console.log('error');
+                    }
+                })
+            }
+    });
+
+    $('#mail').on('blur', function () {
+        //检查邮箱是否正确
+        $(this).siblings('i').hide();
+        if ($(this).val().trim() !== '')
             $.ajax({
                 type: "POST",
-                url: "/checkUser",
+                url: "/checkMail",
                 data: {
-                    "user": $(this).val().trim()
+                    "user": $.cookie('user'),
+                    "mail": $(this).val().trim()
                 },
                 success: function (data) {
                     if (data.isExist === false) {
-                        $('#user').siblings('.wrong').show();
-                        notice('账号不存在');
+                        $('#mail').siblings('.wrong').show();
+                        {#notice('邮箱不存在');#}
                     } else
-                        $('#user').siblings('.correct').show();
+                        $('#mail').siblings('.correct').show();
                 },
                 error: function () {
                     console.log('error');
                 }
             })
     });
+
     $('#check').on('blur', function () {
+        console.log(code);
         $(this).siblings('i').hide();
-        if (code === $(this).val().trim())
-            $(this).siblings('.correct').show();
-        else
-            $(this).siblings('.wrong').show();
-
-    });
-    $('#send').on('click', function () {
-        if ($('#mail').val().trim() === '') {
-            notice("请填写邮箱");
-        } else {
-            $.ajax({
-                type: "POST",
-                url: "/send",
-                data: {
-                    "mail": $('#mail').val().trim(),
-                    "user": $('#user').val().trim()
-                },
-                success: (data) => {
-                    if (data.ischecked === 0)
-                        notice('请输入正确的邮箱');
-                    else {
-                        code = data.code;
-                        $(this).attr('disabled', true);
-                        let num = 60;
-                        $(this).text(num + "后重新发送");
-                        $(this).css('cursor', 'default');
-                        let timeNo = setInterval(() => {
-                            --num;
-                            $(this).text(num + "后重新发送");
-                            if (num === 0) {
-                                $(this).text('发送验证码');
-                                clearInterval(timeNo);
-                            }
-                        }, 1000);
-                    }
-                },
-                error: function () {
-                }
-            })
+        if($(this).val().trim()===""){
+            $(this).siblings('.yanwrong').show();
         }
-    });
-    $('#next').on('click', function () {
-        next();
-    });
-    $('#next').on('keyup', function () {
-        if (e.keyCode === 13)
-            next();
+
+        else if (code === $(this).val().trim())
+            $(this).siblings('.yancorrect').show();
+        else
+            $(this).siblings('.yanwrong').show();
     });
 
-    $('#npw').on('blur', function () {
-        $(this).siblings('i').hide();
-        if ($(this).val().trim() !== '') {
-            let reg = /^[\w!@#$%^&*]{6,16}$/;
-            if (reg.test($(this).val()))
-                $(this).siblings('.correct').show();
-            else {
-                notice('请输入正确的密码');
-                $(this).siblings('.wrong').show();
+    let code;
+    $('#send').on('click', function () {
+        if ($('#mail').val().trim() === '' || $('#user').val().trim() === '') {
+            notice("请填写账号和邮箱");
+        } else {
+            var sign = true;
+            for (let i = 0; i < $('#first .wrong').length; ++i) {
+                if ($($('#first .wrong')[i]).css('display') !== 'none') {
+                    notice('请输入正确的信息');
+                    sign = false;
+                    break;
+                }
+            }
+            if (sign == true) {
+                $.ajax({
+                    type: "POST",
+                    url: "/send",
+                    data: {
+                        "mail": $('#mail').val().trim(),
+                        "user": $('#user').val().trim()
+                    },
+                    success: (data) => {
+                        if (data.ischecked === 0)
+                            notice('请输入正确的邮箱');
+                        else {
+                            code = data.code;
+                            $(this).attr('disabled', true);
+                            let num = 60;
+                            $(this).text(num + "后重新发送");
+                            $(this).css('cursor', 'default');
+                            let timeNo = setInterval(() => {
+                                --num;
+                                $(this).text(num + "后重新发送");
+                                if (num === 0) {
+                                    $(this).text('发送验证码');
+                                    clearInterval(timeNo);
+                                }
+                            }, 1000);
+                        }
+                    },
+                    error: function () {
+                    }
+                })
             }
         }
     });
-    $('#confirm').on('blur', function () {
-        $(this).siblings('i').hide();
-        if ($(this).val().trim() !== $('#npw').val().trim()) {
-            notice('两次密码不一致');
-            $(this).siblings('.wrong').show();
-        } else
-            $(this).siblings('.correct').show();
+
+    $('#cancel').on('click', function () {
+        $(window).attr('location', '/index');
     });
-    $('#complete').on('click', function () {
-        com();
-    })
+
+    $('#confirm').on('click', function () {
+        var signwrong = true;
+        for (let i = 0; i < $('#first .wrong').length; ++i) {
+            if ($($('#first .wrong')[i]).css('display') !== 'none') {
+                notice('账号或邮箱错误');
+                sign = false;
+                break;
+            }
+        }
+        var signyanwrong = true;
+        for (let i = 0; i < $('#first .yanwrong').length; ++i) {
+            if ($($('#first .yanwrong')[i]).css('display') !== 'none') {
+                notice('验证码错误');
+                signyanwrong = false;
+                break;
+            }
+        }
+        var sign=true;
+        if ($(check).val().trim() === ''){
+            $('#check').siblings('.yanwrong').show();
+            sign=false;
+        }
+        if (signwrong === true && signyanwrong === true&&sign===true) {
+            var r = confirm("你确定要注销账号吗？");
+            if (r === true) {
+                $.ajax({
+                    type: "POST",
+                    url: "/deleteUserInfo",
+                    data: {
+                        "user": $.cookie('user'),
+                    },
+                    success: function (data) {
+                        if (data.isSuccess === 1) {
+                            notice('注销成功，欢迎再次使用');
+                            setTimeout(() => {
+                                $(window).attr('location', '/');
+                            }, 2000)
+                        }
+                    },
+                    error: function () {
+                    }
+                });
+            }else {
+                $(window).attr('location', '/index');
+            }
+        }
+    });
 
 </script>
 </body>

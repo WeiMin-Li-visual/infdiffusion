@@ -1,127 +1,288 @@
 <!DOCTYPE html>
 <html>
-	<head>
-	  <meta charset="utf-8">
-	  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-	  <title>舆情演化分析平台</title>
-	  <link rel="stylesheet" href="../static/layui/css/layui.css">
-      <link rel="icon" href="../static/image/icon/logo.ico" type="image/x-icon">
-	</head>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>舆情演化分析平台</title>
+    <link rel="stylesheet" href="../static/layui/css/layui.css">
+    <link rel="icon" href="../static/image/icon/logo.ico" type="image/x-icon">
+    <style>
 
-	<body class="layui-layout-body">
-		<div class="layui-layout layui-layout-admin">
-		  <div class="layui-header ayui-bg-black">
-		    <div class="layui-logo"  style="font-size: 22px;line-height: 60px; ">舆情演化分析平台</div>
+        li {
+            list-style: none;
+        }
 
-		    <!-- 头部区域（可配合layui已有的水平导航） -->
-            <ul class="layui-nav layui-layout-left">
-                <li class="layui-nav-item"><a href="" onclick="skipto('introduce')">使用说明</a></li>
-                <li class="layui-nav-item"><a href="" onclick="skipto('auoutUs')">关于我们</a></li>
-                <li class="layui-nav-item"><a href="" onclick="skipto('joinIn')">加入我们</a></li>
-            </ul>
+        #tip {
+            width: 400px;
+            height: 320px;
+            border: 1px solid black;
+            margin: 0px auto;
+        }
 
-		    <ul class="layui-nav layui-layout-right">
+        #title {
+            height: 80px;
+        }
+
+        #title p {
+            font-size: 20px;
+            text-align: center;
+            line-height: 100px;
+            font-weight: 700;
+        }
+
+        input {
+            height: 38px;
+            line-height: 1.3;
+            line-height: 38px \9;
+            border: 1px solid #ccc;
+            background-color: #fff;
+            border-radius: 2px;
+            padding-left: 10px;
+            width: 66%;
+        }
+
+        #next,
+        #complete {
+            width: 60%;
+            display: block;
+            margin: 10px auto;
+            border-radius: 10px;
+        }
+
+        .wrong,
+        .correct {
+            font-size: 14px;
+            font-weight: 500;
+            display: none;
+        }
+
+        .correct {
+            color: green;
+        }
+
+        .wrong {
+            color: red;
+        }
+
+        #tip {
+        {#display: none;#}
+        }
+    </style>
+</head>
+
+<body class="layui-layout-body">
+<div class="layui-layout layui-layout-admin">
+    <!-- 标题栏 -->
+    <div class="layui-header ayui-bg-black">
+        <div class="layui-logo" style="font-size: 22px;line-height: 60px; ">舆情演化分析平台</div>
+
+        <!-- 头部区域（可配合layui已有的水平导航） -->
+        <ul class="layui-nav layui-layout-left">
+            <li class="layui-nav-item"><a href="javascript:" onclick="skipto('introduce')">使用说明</a></li>
+            <li class="layui-nav-item"><a href="javascript:" onclick="skipto('aboutUs')">关于我们</a></li>
+            {#                <li class="layui-nav-item"><a href="javascript:" onclick="skipto('joinIn')">加入我们</a></li>#}
+        </ul>
+
+        <ul class="layui-nav layui-layout-right">
+            <li class="layui-nav-item">
+                <a href="javascript:;">
+                    <i class="layui-icon layui-icon-username">
+                        <button class="layui-btn" style="background-color:transparent; font-size:18px; color: white"
+                                id="show">用户
+                        </button>
+                    </i>
+                </a>
+                <dl class="layui-nav-child" id="userInfo">
+                </dl>
+            </li>
+            <li class="layui-nav-item">
+                <a href="javascript:;">
+                    <button class="layui-btn" style="background-color:transparent; font-size:18px; color: crimson"
+                            id="delete">注销账号
+                    </button>
+                </a>
+            </li>
+            <li class="layui-nav-item">
+                <a href="javascript:;">
+                    <button class="layui-btn" style="background-color:transparent; font-size:18px; color: crimson"
+                            id="quit">退出
+                    </button>
+                </a>
+            </li>
+        </ul>
+    </div>
+    <!-- 标题栏结束 -->
+
+    <!-- 菜单栏部分头部 -->
+    <div class="layui-side layui-bg-black">
+        <div class="layui-side-scroll">
+            <!-- 左侧导航区域（可配合layui已有的垂直导航） -->
+            <ul class="layui-nav layui-nav-tree" lay-filter="test">
+                <!-- 添加网络结构 -->
+                <!-- layui-nav-itemed：设置默认展开子菜单 -->
+{#                <li class="layui-nav-item">#}
+{#                    <a class="" href="javascript:;" onclick="skipto('addNetwork')" style="font-size: 18px;">添加网络结构</a>#}
+{#                </li>#}
+                <!-- 舆情演化 -->
                 <li class="layui-nav-item">
-                    <a href="javascript:;">
-                        <i class="layui-icon layui-icon-username" style="font-size:18px;">用户</i>
-                    </a>
+                    <a class="" href="javascript:;" onclick="skipto('poEvolution')" style="font-size: 18px;">舆情演化</a>
+                </li>
+                <!-- 谣言传播 -->
+                <li class="layui-nav-item">
+                    <a href="javascript:;" style="font-size: 18px;">传播模型</a>
                     <dl class="layui-nav-child">
-                        <dd><a href="" style="font-size: 15px; ">修改用户信息</a></dd>
-                        <dd><a href="" style="font-size: 15px; color: crimson; font-weight: bold" >注销用户</a></dd>
+                        <a href="javascript:; " style="font-size: 14px;">SI传播模型</a>
+                        <dl class="layui-nav-child">
+                            <dd><a onclick="skipto('introduceSI')" style="cursor:pointer; font-size: 12px">模型介绍</a></dd>
+                            <dd><a onclick="skipto('SI')" style="cursor:pointer; font-size: 12px">模型展示</a></dd>
+                        </dl>
+                    </dl>
+                    <dl class="layui-nav-child">
+                        <a href="javascript:;">SIR传播模型</a>
+                        <dl class="layui-nav-child">
+                            <dd><a onclick="skipto('introduceSIR')" style="cursor:pointer; font-size: 12px">模型介绍</a>
+                            </dd>
+                            <dd><a onclick="skipto('SIR')" style="cursor:pointer; font-size: 12px">模型展示</a></dd>
+                        </dl>
                     </dl>
                 </li>
+                <!-- 谣言溯源 -->
                 <li class="layui-nav-item">
-                    <a href="javascript:;">
-                    <i class="layui-icon " style="font-size:18px; color: crimson">退出</i>
-                    </a>
+                    <a href="javascript:;" style="font-size: 18px;" onclick="skipto('sourceDetection')">谣言溯源</a>
                 </li>
-		    </ul>
-		  </div>
+                <!-- 行为传播 -->
+                <li class="layui-nav-item">
+                    <a href="javascript:;" style="font-size: 18px;">行为传播</a>
+                    <dl class="layui-nav-child">
+                        <a href="javascript:;" style="font-size: 14px;">基于霍克斯过程</a>
+                        <dl class="layui-nav-child">
+                            <dd><a onclick="skipto('introduceHawks')" style="cursor:pointer; font-size: 12px">模型介绍</a>
+                            </dd>
+                            <dd><a onclick="skipto('Hawks')" style="cursor:pointer; font-size: 12px">模型展示</a></dd>
+                        </dl>
+                    </dl>
+                    <dl class="layui-nav-child">
+                        <a href="javascript:;" style="font-size: 14px;">基于博弈论</a>
+                        <dl class="layui-nav-child">
+                            <dd><a onclick="skipto('introduceGameTheory')"
+                                   style="cursor:pointer;font-size: 12px">模型介绍</a></dd>
+                            <dd><a onclick="skipto('GameTheory')" style="cursor:pointer;font-size: 12px">模型展示</a></dd>
+                            <dd><a onclick="skipto('gametheory_comparison')"
+                                   style="cursor:pointer;font-size: 12px">模型对比</a></dd>
+                        </dl>
+                    </dl>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <!-- 菜单栏部分结束 -->
 
-            <!-- ayui-bg-black是背景颜色 -->
-		  <div class="layui-side layui-bg-black">
-		    <div class="layui-side-scroll">
-		      <!-- 左侧导航区域（可配合layui已有的垂直导航） -->
-		      <ul class="layui-nav layui-nav-tree"  lay-filter="test">
-                  <!-- 添加网络结构 -->
-                  <!-- layui-nav-itemed：设置默认展开子菜单 -->
-                  <li class="layui-nav-item">
-                      <a class="" href="javascript:;" onclick="skipto('addNetwork')" style="font-size: 18px;">添加网络结构</a>
-                  </li>
-                  <!-- 舆情演化 -->
-                  <li class="layui-nav-item">
-                      <a class="" href="javascript:;" onclick="skipto('poEvolution')" style="font-size: 18px;">舆情演化</a>
-                  </li>
-                  <!-- 谣言传播 -->
-                  <li class="layui-nav-item">
-                      <a href="javascript:;" style="font-size: 18px;">传播模型</a>
-                      <dl class="layui-nav-child">
-                          <a href="javascript:; " style="font-size: 14px;">SI传播模型</a>
-                          <dl class="layui-nav-child">
-                              <dd><a onclick="skipto('introduceSI')" style="cursor:pointer; font-size: 12px">模型介绍</a></dd>
-                              <dd><a onclick="skipto('SI')" style="cursor:pointer; font-size: 12px">模型展示</a></dd>
-                          </dl>
-                      </dl>
-                      <dl class="layui-nav-child">
-                          <a href="javascript:;">SIR传播模型</a>
-                          <dl class="layui-nav-child">
-                              <dd><a onclick="skipto('introduceSIR')" style="cursor:pointer; font-size: 12px">模型介绍</a></dd>
-                              <dd><a onclick="skipto('SIR')" style="cursor:pointer; font-size: 12px">模型展示</a></dd>
-                          </dl>
-                      </dl>
-                  </li>
-                 <!-- 谣言溯源 -->
-                  <li class="layui-nav-item">
-                      <a href="javascript:;" style="font-size: 18px;" onclick="skipto('sourceDetection')">谣言溯源</a>
-                  </li>
-                  <!-- 行为传播 -->
-                  <li class="layui-nav-item">
-                      <a href="javascript:;" style="font-size: 18px;">行为传播</a>
-                      <dl class="layui-nav-child">
-                          <a href="javascript:;" style="font-size: 14px;">基于霍克斯过程</a>
-                          <dl class="layui-nav-child">
-                              <dd><a onclick="skipto('introduceHawks')" style="cursor:pointer; font-size: 12px">模型介绍</a></dd>
-                              <dd><a onclick="skipto('Hawks')" style="cursor:pointer; font-size: 12px">模型展示</a></dd>
-                          </dl>
-                      </dl>
-                      <dl class="layui-nav-child">
-                          <a href="javascript:;" style="font-size: 14px;">基于博弈论</a>
-                          <dl class="layui-nav-child">
-                              <dd><a onclick="skipto('introduceGameTheory')" style="cursor:pointer;font-size: 12px">模型介绍</a></dd>
-                              <dd><a onclick="skipto('GameTheory')" style="cursor:pointer;font-size: 12px">模型展示</a></dd>
-                              <dd><a onclick="skipto('gametheory_comparison')" style="cursor:pointer;font-size: 12px">模型对比</a></dd>
-                          </dl>
-                      </dl>
-                  </li>
-		      </ul>
-		    </div>
-		  </div>
+    <!-- 内容部分 -->
+    <div class="layui-body" style=" overflow: hidden;">
+        <!-- 内容主体区域 -->
+        <div id="init_title" style="position:absolute;left:10%;top:45%;font-size: 100px;">社交网络舆情传播演化与分析平台</div>
+        <iframe id="iframe_id" src="" style=" width: 100%; height:100%;"></iframe>
 
-		  <div class="layui-body" style=" overflow: hidden;">
-		    <!-- 内容主体区域 -->
-		    	<div id="init_title" style="position:absolute;left:23%;top:45%;font-size: 100px;">社交网络舆情演化与分析</div>
-		    	<iframe id="iframe_id" src="" style=" width: 100%; height:100%;"></iframe>
-		  </div>
+    </div>
+    <!-- 内容部分结束 -->
 
-		  <div class="layui-footer">
-		    <!-- 底部固定区域 -->
-		    @SocialNetw.com
-		  </div>
-		</div>
-		<script src="../static/layui/layui.js"></script>
-		<script>
-            layui.use(['element'], function(){
-                var element = layui.element;
-            });
+    <!-- 尾部 -->
+    <div class="layui-footer" style="text-align: center">
+        <!-- 底部固定区域 -->
+        © 2020 - 社交网络舆情传播演化与分析平台版权所有
+    </div>
+    <!-- 尾部结束 -->
+</div>
+<script src="../static/layui/layui.js"></script>
+<script type="text/javascript" src="../static/js/assembly/jquery.min.js"></script>
+<!-- Jquery.cookie Js-->
+<script src="../static/js/jquery.cookie.js"></script>
+<script>
+    layui.use(['element'], function () {
+        var element = layui.element;
+    });
 
-            function skipto(target){
-                var ifr = document.getElementById('iframe_id');
-                if(document.getElementById('init_title')){
-                    var inf = document.getElementById('init_title');
-                    inf.remove();
+    function notice(info) {
+        layui.use('layer', function () {
+            let layer = layui.layer;
+            layer.msg(info);
+        });
+    }
+
+    {#userInfo = " ";#}
+    {#mailInfo = " ";#}
+    {#numberInfo = " ";#}
+    {#unitInfo = " ";#}
+    {##}
+    {#(() => {#}
+    {#    userInfo = $.cookie('user');#}
+    {#    console.log(userInfo);#}
+    {#})
+    ();
+    #}
+
+    function skipto(target) {
+        var ifr = document.getElementById('iframe_id');
+        if (document.getElementById('init_title')) {
+            var inf = document.getElementById('init_title');
+            inf.remove();
+        }
+        ifr.src = 'http://127.0.0.1:5000/' + target;
+    }
+
+    $('#quit').on('click', function () {
+        var r = confirm("你确定要退出吗？");
+        if (r === true) {
+            $(window).attr('location', '/');
+        }
+    });
+
+    $('#delete').on('click', function () {
+        $(window).attr('location', '/deleteUserInfo');
+        {#var r = confirm("你确定要注销账号吗？");#}
+        {#if (r === true) {#}
+        {#    $.ajax({#}
+        {#        type: "POST",#}
+        {#        url: "/deleteInfo",#}
+        {#        data: {#}
+        {#            "user": $.cookie('user'),#}
+        {#        },#}
+        {#        success: function (data) {#}
+        {#            if (data.isSuccess === 1) {#}
+        {#                notice('注销成功，感谢使用');#}
+        {#                setTimeout(() => {#}
+        {#                    $(window).attr('location', '/');#}
+        {#                }, 2000)#}
+        {#            }#}
+        {#        },#}
+        {#        error: function () {#}
+        {#        }#}
+        {#    })#}
+        {#}#}
+    });
+
+    var count = 0;
+    if (count === 0) {
+        $('#show').on('mouseover', function () {
+            var userInfo = "";
+            $("#userInfo").html("");
+            $.ajax({
+                url: "/getSessionUser",
+                type: "post",
+                success: function (data) {
+                    if (data.isSuccess === 1) {
+                        userInfo = '<dd><a href="javascript:return false;">账号：' + data.user + '</a></dd>' +
+                            '<dd><a href="javascript:return false;">手机号：' + data.number + '</a></dd>' +
+                            '<dd><a href="javascript:return false;">邮箱：' + data.mail + '</a></dd>' +
+                            '<dd><a href="javascript:return false;">单位：' + data.unit + '</a></dd>'
+                    }
+                    $("#userInfo").append(userInfo)
                 }
-                ifr.src = 'http://127.0.0.1:5000/' + target;
-            }
-        </script>
-	</body>
+            });
+            count++;
+        });
+    }
+
+</script>
+</body>
 </html>

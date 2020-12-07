@@ -63,20 +63,29 @@
             position: relative;
             top: 1px;
         }
+
         .wrong,
+        .zhangwrong,
         .correct {
             font-size: 14px;
             font-weight: 500;
             display: none;
         }
+
         .correct {
             color: green;
         }
+
         .wrong {
             color: red;
         }
-        .textbox{
-            height: 30px;width: 220px
+        .zhangwrong {
+            color: red;
+        }
+
+        .textbox {
+            height: 30px;
+            width: 220px
         }
 
     </style>
@@ -118,7 +127,7 @@
 <!-- 尾部 -->
 <div class="layui-row" style="top: 100px;bottom: 20px">
     <div class="layui-col-sm12 layui-col-md12 zyl_center zyl_mar_01">
-        <b style="font-size: 15px">© 2020 - 社交网络舆情演化分析平台版权所有</b>
+        <b style="font-size: 15px"> © 2020 - 社交网络舆情传播演化与分析平台版权所有</b>
     </div>
 </div>
 <!-- 尾部结束 -->
@@ -139,6 +148,7 @@
                         <i class="layui-icon wrong">&#x1006;</i>
                         <i class="layui-icon correct">&#xe605;</i>
                         <i class="layui-icon wrong">账号已存在</i>
+                        <i class="layui-icon zhangwrong"><br>账号为数字字母下划线组合</i>
                     </div>
                 </div>
                 <div class="layui-form-item">
@@ -199,6 +209,7 @@
                         <button class="layui-btn layui-btn-primary" style="margin-left: 10px;" id="send">发送验证码</button>
                         <i class="layui-icon wrong">&#x1006;</i>
                         <i class="layui-icon correct">&#xe605;</i>
+                        <i class="layui-icon wrong"><br>验证码不正确</i>
                     </div>
                 </div>
             </li>
@@ -275,66 +286,71 @@
 
     function regis() {
         let sign = 0;
-        if ($('#mail').val().trim() === ''||$('#user').val().trim() === ''||$('#password').val().trim() === '') {
+        if ($('#mail').val().trim() === '' || $('#user').val().trim() === '' || $('#password').val().trim() === '') {
             notice("账号，密码，邮箱为必填项");
-            sign=1
+            sign = 1
         }
 
-        if (sign === 0) {
-            sign = 0;
-            {#for (let i = 0; i < $('.correct').length; ++i)#}
-            {#    if ($($('.correct')[i]).css('display') === 'none') {#}
-            {#        notice('信息错误');#}
-            {#        sign = 1;#}
-            {#        break;#}
-            {#    }#}
-            if (sign === 0) {
-                $.ajax({
-                    type: "POST",
-                    url: "/register",
-                    data: {
-                        "user": $('#user').val().trim(),
-                        "password": $('#password').val().trim(),
-                        "mail": $('#mail').val().trim(),
-                        "number": $('#number').val().trim(),
-                        "unit": $('#unit').val().trim()
-                    },
-                    success: function (data) {
-                        if (data.isSuccess === 1) {
-                            notice('注册成功,请登录');
-                            setTimeout(() => {
-                                $(window).attr('location', '/');
-                            }, 2000)
-                        }
-                    },
-                    error: function () {
-                    }
-                })
+        let sign1 = 0;
+        for (let i = 0; i < $('.wrong').length; ++i)
+            if ($($('.wrong')[i]).css('display') !== 'none') {
+                notice('验证码错误');
+                sign1 = 1;
+                break;
             }
+
+        if (sign === 0 && sign1 === 0) {
+            $.ajax({
+                type: "POST",
+                url: "/register",
+                data: {
+                    "user": $('#user').val().trim(),
+                    "password": $('#password').val().trim(),
+                    "mail": $('#mail').val().trim(),
+                    "number": $('#number').val().trim(),
+                    "unit": $('#unit').val().trim()
+                },
+                success: function (data) {
+                    if (data.isSuccess === 1) {
+                        notice('注册成功,请登录');
+                        setTimeout(() => {
+                            $(window).attr('location', '/');
+                        }, 2000)
+                    }
+                },
+                error: function () {
+                }
+            })
         }
     }
 
     $('#user').on('blur', function () {
         //检查用户名是否重复
         $(this).siblings('i').hide();
-        if ($(this).val().trim() != '')
-            $.ajax({
-                type: "POST",
-                url: "/checkUser",
-                data: {
-                    "user": $(this).val().trim()
-                },
-                success: function (data) {
-                    if (data.isExist === true) {
-                        $('#user').siblings('.wrong').show();
-                        notice('用户名已存在');
-                    } else
-                        $('#user').siblings('.correct').show();
-                },
-                error: function () {
-                    console.log('error');
-                }
-            })
+        if ($(this).val().trim() !== '') {
+            let reg = /^[0-9a-zA-Z_]{1,}$/;
+            if (!reg.test($(this).val().trim()))
+                $(this).siblings('.zhangwrong').show();
+            else {
+                $.ajax({
+            type: "POST",
+            url: "/checkUser",
+            data: {
+                "user": $(this).val().trim()
+            },
+            success: function (data) {
+                if (data.isExist === true) {
+                    $('#user').siblings('.wrong').show();
+                    notice('账号已存在');
+                } else
+                    $('#user').siblings('.correct').show();
+            },
+            error: function () {
+                console.log('error');
+            }
+        })
+            }
+        }
     });
 
     $('#password').on('blur', function () {
@@ -394,12 +410,12 @@
     $('#register').on('click', () => {
         regis();
     });
-    $('#send').on('click', function () {
-        if ($('#mail').val().trim() === ''||$('#user').val().trim() === ''||$('#password').val().trim() === '') {
-            notice("账号，密码，邮箱为必填项");
-        }
 
-        else {
+
+    $('#send').on('click', function () {
+        if ($('#mail').val().trim() === '' || $('#user').val().trim() === '' || $('#password').val().trim() === '') {
+            notice("账号，密码，邮箱为必填项");
+        } else {
             $.ajax({
                 type: "POST",
                 url: "/send",
@@ -415,6 +431,7 @@
                 }
             });
             $(this).attr('disabled', true);
+            notice('验证码已发送至您的邮箱，请注意查收！');
             let num = 60;
             $(this).text(num + "后重新发送");
             $(this).css('cursor', 'default');
