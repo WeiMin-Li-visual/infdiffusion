@@ -6,6 +6,7 @@ from algorithm import gameTheory
 from algorithm import sourceDetection as sd
 from algorithm import SIModel as si
 from algorithm import SIRModel as sir
+from algorithm import opinionEvolution as oe
 import pandas as pd
 import json
 import random
@@ -352,14 +353,27 @@ def addNetwork():
 
 
 # 舆情演化
-@app.route('/poEvolution')
+@app.route('/poEvolution',methods=["GET", "POST"])
 def poEvolution():
     '''
     TODO
     :return:
     '''
-    data = [1, 2, 3, 4, 5]
-    return render_template('poEvolution.html', data=data)
+    opinionCategory = ''
+    if request.method == "GET":
+        opinionCategory = '1'
+    if request.method == "POST":
+        # 获取前端回传的 下拉框选中的舆情类别序列编号value
+        opinionCategory = request.form.get('opinionCategory')
+        # 如果为'0'代表随机选择一个类别，则随机数生成一个类别计算回传
+        if opinionCategory == '0':
+            opinionCategory = str(random.randint(1, len(oe.MicroBlogTitleTable)))
+    MicroBlogTitle, MicroBlogCategory, commentsVolumeByHour, commentsVolumeByDay, commentsVolumeByWeek = oe.calculateCommentVolume(
+        opinionCategory)
+    # 统一return语句
+    return render_template('opinionEvolution.html', MicroBlogTitle=MicroBlogTitle, MicroBlogCategory=MicroBlogCategory,
+                           commentsVolumeByHour=commentsVolumeByHour, commentsVolumeByDay=commentsVolumeByDay,
+                           commentsVolumeByWeek=commentsVolumeByWeek)
 
 
 # 介绍SI
