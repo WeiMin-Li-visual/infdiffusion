@@ -68,9 +68,12 @@ def checkMail():
         requestArgs = request.values
         user = requestArgs.get('user')
         mail = requestArgs.get('mail')
+        print(user)
+        print(mail)
         cur.execute("select mail from users where user = " + "'" + user + "'")
         result = cur.fetchone()  # 获取查询结果
         if result is not None and mail == result[0]:
+            print("sdgf")
             return jsonify({'isExist': True})
         return jsonify({'isExist': False})
 
@@ -371,6 +374,7 @@ def poEvolution():
     MicroBlogTitle, MicroBlogCategory, commentsVolumeByHour, commentsVolumeByDay, commentsVolumeByWeek = oe.calculateCommentVolume(
         opinionCategory)
     # 统一return语句
+    print(commentsVolumeByHour)
     return render_template('opinionEvolution.html', MicroBlogTitle=MicroBlogTitle, MicroBlogCategory=MicroBlogCategory,
                            commentsVolumeByHour=commentsVolumeByHour, commentsVolumeByDay=commentsVolumeByDay,
                            commentsVolumeByWeek=commentsVolumeByWeek)
