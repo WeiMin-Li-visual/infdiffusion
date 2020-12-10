@@ -371,13 +371,13 @@ def poEvolution():
         # 如果为'0'代表随机选择一个类别，则随机数生成一个类别计算回传
         if opinionCategory == '0':
             opinionCategory = str(random.randint(1, len(oe.MicroBlogTitleTable)))
-    MicroBlogTitle, MicroBlogCategory, commentsVolumeByHour, commentsVolumeByDay, commentsVolumeByWeek = oe.calculateCommentVolume(
-        opinionCategory)
+    MicroBlogTitle, MicroBlogCategory, commentsVolumeByHour, commentsVolumeByDay, commentsVolumeByWeek, MicroBlogIntroduction, MicroBlogPopularityScore, MicroBlogReadingTimes, MicroBlogDiscussionTimes, MicroBlogOriginalNumber = oe.calculateCommentVolume(opinionCategory)
     # 统一return语句
-    print(commentsVolumeByHour)
     return render_template('opinionEvolution.html', MicroBlogTitle=MicroBlogTitle, MicroBlogCategory=MicroBlogCategory,
                            commentsVolumeByHour=commentsVolumeByHour, commentsVolumeByDay=commentsVolumeByDay,
-                           commentsVolumeByWeek=commentsVolumeByWeek)
+                           commentsVolumeByWeek=commentsVolumeByWeek, MicroBlogIntroduction=MicroBlogIntroduction,
+                           MicroBlogPopularityScore=MicroBlogPopularityScore, MicroBlogReadingTimes=MicroBlogReadingTimes,
+                           MicroBlogDiscussionTimes=MicroBlogDiscussionTimes, MicroBlogOriginalNumber=MicroBlogOriginalNumber)
 
 
 # 介绍SI

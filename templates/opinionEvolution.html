@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
-<!--王婕、刘芳宇 2020.12.1-->
+<!--王婕、刘芳宇 2020.12.7-->
 <head>
     <meta charset="UTF-8">
     <title>舆情传播</title>
@@ -8,36 +8,109 @@
     <link rel="stylesheet" href="../static/layui/css/layui.css" media="all">
 </head>
 <body>
-<h1 id="MicroBlogTitle">罗志祥与周扬清分手事件微博评论</h1>
-<div id="control" class="layui-form-item" style="position: absolute;right: 8%;">
-    <form class="layui-form" method="post">
-        <div class="layui-form-item">
-            <label class="layui-form-label">舆情类别</label>
-            <div class="layui-input-block">
-                <select name="opinionCategory" id="MicroBlogCategory" lay-filter="fangfa">
-                    <option value="0" selected="">随机选择</option>
-                    <option value="1">公共卫生</option>
-                    <option value="2">前沿科技</option>
-                    <option value="3">国际快讯</option>
-                    <option value="4">旅游文化</option>
-                    <option value="5">体育播报</option>
-                    <option value="6">明星感情</option>
-                </select>
+<div class="header-top">
+    <h1 id="MicroBlogTitle">罗志祥与周扬清分手事件微博评论</h1>
+    <div id="control" class="layui-form-item">
+        <form class="layui-form" method="post">
+            <div class="layui-form-item">
+                <label class="layui-form-label" for="MicroBlogCategory"><b>舆情类别:</b></label>
+                <div class="layui-input-block">
+                    <select name="opinionCategory" id="MicroBlogCategory" lay-filter="fangfa">
+                        <option value="0" selected="">随机选择</option>
+                        <option value="1">公共卫生</option>
+                        <option value="2">前沿科技</option>
+                        <option value="3">国际快讯</option>
+                        <option value="4">旅游文化</option>
+                        <option value="5">体育播报</option>
+                        <option value="6">娱乐八卦</option>
+                    </select>
+                </div>
             </div>
-        </div>
-        <div class="layui-form-item">
-            <div class="layui-input-block">
+            <div class="layui-form-item">
+                {#            <div class="layui-input-block">#}
                 <button class="layui-btn" lay-submit lay-filter="*">提交</button>
+                {#            </div>#}
+            </div>
+        </form>
+    </div>
+</div>
+<hr/>
+<div class="tables">
+    <div id="main1" style="width:33%;height:400px"></div>
+    <div id="main2" style="width:33%;height:400px"></div>
+    <div id="main3" style="width:33%;height:400px"></div>
+</div>
+<hr/>
+<div class="header-top" style="margin-top: 20px;">
+    <h2 id=""><b>统计概述</b></h2>
+    <div id="test9"></div>
+</div>
+<div style="padding: 20px; background-color: #F2F2F2;">
+  <div class="layui-row layui-col-space15">
+    <div class="layui-col-md6">
+      <div class="layui-card">
+        <div class="layui-card-header"><b>总体介绍</b></div>
+        <div class="layui-card-body" id="MicroBlogIntroduction" style="height: 100px;">
+
+        </div>
+      </div>
+    </div>
+    <div class="layui-col-md6">
+      <div class="layui-card">
+          <div class="layui-card-header"><b>数据总览</b></div>
+        <div class="layui-card-body" style="display: flex;height: 100px;">
+            <div style="width: 33%;text-align: center;">
+                <div><p id="number1" style="font-size: xx-large;display: inline;">4.2</p><p id="unit1" style="display: inline;">亿</p></div>
+                <div>阅读次数</div>
+            </div>
+            <div style="width: 33%;text-align: center;">
+                <div><p id="number2" style="font-size: xx-large;display: inline;">1.2</p><p id="unit2" style="display: inline;">万</p></div>
+                <div>讨论次数</div>
+            </div>
+            <div style="width: 33%;text-align: center;">
+                <div><p id="number3" style="font-size: xx-large;display: inline;">3241</p><p id="unit3" style="display: inline;"></p></div>
+                <div>原创人数</div>
             </div>
         </div>
-    </form>
+      </div>
+    </div>
+  </div>
 </div>
-<div id="main1" style="width:1000px;height:400px"></div>
-<div id="main2" style="width:1000px;height:400px"></div>
-<div id="main3" style="width:1000px;height:400px"></div>
-<h2><b>评论词云</b></h2>
-<img id="wordCloud" width="910" height="400"
-     src="../static/image/MicroBlogCommentsWordCloud/MicroBlogCommentsWordCloud1.png">
+<hr style="margin-top: 30px;"/>
+<h2 style="margin-bottom: 20px;margin-top: 20px"><b>评论词云</b></h2>
+<div style="display: flex;justify-content: center">
+    <img id="wordCloud" style="height:700px;width: 80%;box-shadow: 6px 6px 20px 0 #999;"
+         src="../static/image/MicroBlogCommentsWordCloud/MicroBlogCommentsWordCloud1.png">
+</div>
+<style>
+    .tables {
+        display: flex;
+    }
+
+    body {
+        padding: 60px;
+    }
+
+    .layui-form {
+        display: flex;
+    }
+
+    .layui-input-block {
+        margin-left: 110px;
+    }
+
+    .layui-btn {
+        margin-left: 20px;
+    }
+
+    .header-top {
+        display: flex;
+        justify-content: space-between;
+    }
+    hr{
+        margin: 0;
+    }
+</style>
 <script>//以小时为粒度
 //基于准备好的DOM，初始化echarts实例
 var myChart = echarts.init(document.getElementById("main1"));
@@ -45,37 +118,62 @@ var commentsVolumeByHour = {{commentsVolumeByHour | tojson}};//获取后端返�
 commentsVolumeByHour = JSON.parse(commentsVolumeByHour);
 var hours = Object.keys(commentsVolumeByHour);
 var volumes = Object.values(commentsVolumeByHour);
-console.log(volumes);
 //指定图表的配置和数据
 var option = {
     //为图表配置标题
     title: {
-        text: "以小时为粒度"
-    },
-    tooltip: {
-        trigger: 'axis',  // 坐标轴触发，主要在柱状图，折线图等会使用类目轴的图表中使用。
+        text: "以小时为粒度",
+        x: 'center'
     },
     //图例组件
     legend: {
+        x: 700,
         data: ['评论数量']
     },
     //配置要在X轴显示的项
     xAxis: {
+        name: '时间',
         type: 'category',
         //data: ['1','2','3','4','5','6','7','8','9','10','11','12','13','14','15','16','17','18','19','20','21','22','23','24']
         data: hours
     },
     //配置要在Y轴显示的项
     yAxis: {
+        name: '数值',
         type: 'value'
     },
+    //显示节点上的数据信息
+    tooltip: {
+        trigger: 'axis',
+        axisPointer: {
+            type: 'cross',
+            label: {
+                backgroundColor: '#6a7985'
+            }
+        }
+    },
     //系列列表：每个系列通过Type决定自己的图表类型
-
     series: [{
         name: "评论数量",  //系列名称
         //data:[820, 932, 901, 934, 1290, 1330, 1320],  //系列中的数据内容
         data: volumes,  //系列中的数据内容数量统计
-        type: "line"   //系列图表类型(折线图或面积图)
+        type: "line",   //系列图表类型(折线图或面积图)
+        itemStyle: {
+            normal: {color: "#b22222"}//坐标原点的颜色
+        },
+        lineStyle: {
+            normal: {color: "#b22222"}
+        },
+        areaStyle: {
+            normal: {
+                // 填充色渐变
+                color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                    {offset: 0, color: "#b22222"},
+                    {offset: 0.8, color: "rgba(178, 34, 34, 0.3)"},
+                    {offset: 1, color: "rgba(178, 34, 34, 0)"}
+                ])
+            }
+        },
     }]
 };
 //使用刚指定的配置项和数据显示图表
@@ -94,21 +192,35 @@ var volumes = Object.values(commentsVolumeByDay);
 var option = {
     //为图表配置标题
     title: {
-        text: "以天为粒度"
+        text: "以天为粒度",
+        x: 'center'
     },
     //图例组件
     legend: {
+        x: 700,
         data: ['评论数量']
     },
     //配置要在X轴显示的项
     xAxis: {
+        name: '时间',
         type: 'category',
         //data: ['第一天','第二天','第三天','第四天','第五天']
         data: days
     },
     //配置要在Y轴显示的项
     yAxis: {
+        name: '数值',
         type: 'value'
+    },
+    //显示节点上的数据信息
+    tooltip: {
+        trigger: 'axis',
+        axisPointer: {
+            type: 'cross',
+            label: {
+                backgroundColor: '#6a7985'
+            }
+        }
     },
     //系列列表：每个系列通过Type决定自己的图表类型
     series: [{
@@ -121,7 +233,17 @@ var option = {
         },
         lineStyle: {
             normal: {color: "#228B22"}
-        }
+        },
+        areaStyle: {
+            normal: {
+                // 填充色渐变
+                color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                    {offset: 0, color: "#228B22"},
+                    {offset: 0.7, color: "rgba(34 ,139 ,34 ,0.3)"},
+                    {offset: 1, color: "rgba(34 ,139 ,34 ,0)"}
+                ])
+            }
+        },
     }]
 };
 //使用刚指定的配置项和数据显示图表
@@ -139,21 +261,35 @@ var volumes = Object.values(commentsVolumeByWeek);
 var option = {
     //为图表配置标题
     title: {
-        text: "以周为粒度"
+        text: "以周为粒度",
+        x: 'center'
     },
     //图例组件
     legend: {
+        x: 700,
         data: ['评论数量']
     },
     //配置要在X轴显示的项
     xAxis: {
+        name: '时间',
         type: 'category',
         //data: ['第一周','第二周','第三周']
         data: weeks
     },
     //配置要在Y轴显示的项
     yAxis: {
+        name: '数值',
         type: 'value'
+    },
+    //显示节点上的数据信息
+    tooltip: {
+        trigger: 'axis',
+        axisPointer: {
+            type: 'cross',
+            label: {
+                backgroundColor: '#6a7985'
+            }
+        }
     },
     //系列列表：每个系列通过Type决定自己的图表类型
     series: [{
@@ -162,11 +298,23 @@ var option = {
         data: volumes,  //系列中的数据内容
         type: "line", //系列图表类型(折线图或面积图)
         itemStyle: {
-            normal: {color: "#4169E1"}//坐标原点的颜色
+            normal: {
+                color: "#4169E1", //坐标原点的颜色
+            }
         },
         lineStyle: {
             normal: {color: "#4169E1"}
-        }
+        },
+        areaStyle: {
+            normal: {
+                // 填充色渐变
+                color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                    {offset: 0, color: "#3aa7ff"},
+                    {offset: 0.5, color: "rgba(58, 167, 255,0.4)"},
+                    {offset: 1, color: "rgba(58, 167, 255,0)"}
+                ])
+            }
+        },
     }]
 };
 //使用刚指定的配置项和数据显示图表
@@ -176,11 +324,11 @@ myChart.setOption(option);
 <!--#渲染显示下拉框列表-->
 <script type="text/javascript">
     //根据后台回传数据更新微博主题
-    var MicroBlogTitle = {{MicroBlogTitle | tojson}};//获取后端返回的评论统计数据（按时）
+    var MicroBlogTitle = {{MicroBlogTitle | tojson}};//获取后端返回的微博标题
     MicroBlogTitle = JSON.parse(MicroBlogTitle);
     document.getElementById("MicroBlogTitle").innerHTML = "<b>" + MicroBlogTitle["MicroBlogTitle"] + "</b>";
     //根据后台回传数据将下拉框设定选中上一次选中的类别
-    var MicroBlogCategory = {{MicroBlogCategory | tojson}};//获取后端返回的评论统计数据（按时）
+    var MicroBlogCategory = {{MicroBlogCategory | tojson}};//获取后端返回的微博类别
     MicroBlogCategory = JSON.parse(MicroBlogCategory);
     //解析出回传的上次选中类别
     var lastSelectCategory = MicroBlogCategory["MicroBlogCategory"];
@@ -200,6 +348,61 @@ myChart.setOption(option);
         var form = layui.form;
         form.render();
     });
+    //更新微博话题介绍
+    var MicroBlogIntroduction = {{MicroBlogIntroduction | tojson}};//获取后端返回的微博话题介绍
+    MicroBlogIntroduction = JSON.parse(MicroBlogIntroduction);
+    document.getElementById("MicroBlogIntroduction").innerText = MicroBlogIntroduction["MicroBlogIntroduction"];
+    //更新微博热度评分
+    var MicroBlogPopularityScore = {{MicroBlogPopularityScore | tojson}};//获取后端返回的微博热度评分
+    MicroBlogPopularityScore = JSON.parse(MicroBlogPopularityScore);
+    //评分组件效果
+    layui.use(['rate'], function(){
+        var rate = layui.rate;
+        //只读
+        rate.render({
+            elem: '#test9'
+            ,value:parseFloat(MicroBlogPopularityScore["MicroBlogPopularityScore"])
+            ,half:true
+            ,readonly: true
+        });
+    });
+    //大额数字转换方法（123456789=1.2亿）
+    function getNumberFormat (value) {
+        var param = {};
+        var k = 10000,
+            sizes = ['', '万', '亿', '万亿'],
+            i;
+            if(value < k){
+                param.value =value
+                param.unit=''
+            }else{
+                i = Math.floor(Math.log(value) / Math.log(k));
+                param.value = ((value / Math.pow(k, i))).toFixed(2);
+                param.unit = sizes[i];
+            }
+        return param;
+    }
+    //更新微博话题阅读次数
+    var MicroBlogReadingTimes = {{MicroBlogReadingTimes | tojson}};//获取后端返回的微博阅读次数
+    MicroBlogReadingTimes = JSON.parse(MicroBlogReadingTimes);
+    var ReadingTimes = MicroBlogReadingTimes["MicroBlogReadingTimes"];
+    var formatNumber1 = getNumberFormat(parseFloat(ReadingTimes));
+    document.getElementById("number1").innerText = formatNumber1.value;
+    document.getElementById("unit1").innerText = formatNumber1.unit;
+    //更新微博话题讨论次数
+    var MicroBlogDiscussionTimes = {{MicroBlogDiscussionTimes | tojson}};//获取后端返回的微博讨论次数
+    MicroBlogDiscussionTimes = JSON.parse(MicroBlogDiscussionTimes);
+    var DiscussionTimes = MicroBlogDiscussionTimes["MicroBlogDiscussionTimes"];
+    var formatNumber2 = getNumberFormat(parseFloat(DiscussionTimes));
+    document.getElementById("number2").innerText = formatNumber2.value;
+    document.getElementById("unit2").innerText = formatNumber2.unit;
+    //更新微博话题原创人数
+    var MicroBlogOriginalNumber = {{MicroBlogOriginalNumber | tojson}};//获取后端返回的微博原创人数
+    MicroBlogOriginalNumber = JSON.parse(MicroBlogOriginalNumber);
+    var OriginalNumber = MicroBlogOriginalNumber["MicroBlogOriginalNumber"];
+    var formatNumber3 = getNumberFormat(parseFloat(OriginalNumber));
+    document.getElementById("number3").innerText = formatNumber3.value;
+    document.getElementById("unit3").innerText = formatNumber3.unit;
 </script>
 </body>
 </html>
