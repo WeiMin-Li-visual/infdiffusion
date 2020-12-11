@@ -15,8 +15,8 @@
                         <div class="layui-colla-title" style="background-color: #f8f8f8;font-size:25px; font-weight: bold; color: #000000;">
                             SIR模型介绍
                         </div>
-                        <div class="layui-colla-content layui-show" style="background-color:#f8f8f8; overflow:auto; width:1400px; height:180px; font-size:18px; color: #000000; line-height:25pt; text-align: justify; text-indent: 2em;">
-                            SIR模型再SI模型的基础上，进一步考虑了病人的康复过程。其中S类为易感者 (Susceptible)，指未得病者，但缺乏免疫能力，与感染者接触后容易受到感染；I 类为感病者 (Infectious)，指染上传染病的人，可以传播给 S 类成员，将其变为 I 类成员，R 类为康复者 (Recovered)，指被隔离或因病愈而具有免疫力的人。如免疫期有限，R 类成员可以重新变为 S 类。参数为1.感染率：已感染节点将疾病传播到相邻节点并使其感染的概率。2.恢复率：感染节点痊愈并获得免疫力的概率。图1为人数为104，感染率为0.3，恢复率为0.1的SIR模型。图2为传播动画截图，红色节点代表感染者，灰色节点代表健康人群，蓝色节点代表已康复并获得免疫力的人群。系统中感染率和恢复率的输入格式均为0-1之间的小数，如“0.1”，“0.123”等。
+                        <div class="layui-colla-content layui-show" style="background-color:#f8f8f8; overflow:auto; width:1300px; height:180px; font-size:18px; color: #000000; line-height:25pt; text-align: justify; text-indent: 2em;">
+                            SIR模型是传染病模型中最经典的模型，SIR模型在SI模型的基础上，进一步考虑了病人的康复过程。SIR模型将总人口分为以下三类：易感者(susceptibles)，表示未染病但有可能被该类疾病传染的群体；感染者(infectives)，表示已被感染成为病人而且具有传染力的群体；恢复者(recovered)，表示已从感染者中康复的群体，且不再会被感染。而在谣言传播过程中，S类指的尚未接收到谣言信息的无知者人群，I类指那些接受并传播谣言的传播者人群，而R类指知道真相或者对谣言是去兴趣后不再传播谣言的人，并且不会再被传播者感染重新进行传播谣言的行为。该模型有两个参数，感染率和恢复率。感染率是传播者将谣言传播给它的邻居节点并使其感染的概率，恢复率是一个感染节点痊愈并获得免疫力的概率。系统中感染率和恢复率的取值范围均为[0,1]。图1为SIR模型在wiki百科网络上模拟传播的结果，其中总人数为104，初始时刻网络中只有一个感染节点，感染率设置为0.3，恢复率设置为0.1。红色曲线展示了网络中感染节点的数量变化，黑色曲线展示了网络中易感节点的数量变化，绿色曲线展示了网络中恢复节点的数量变化。图2为SIR模型传播动态截图，灰色节点代表易感节点，红色节点代表感染节点，绿色节点表示恢复节点。
                         </div>
                     </div>
                 </div>
@@ -41,7 +41,7 @@ layui.use('carousel', function(){
     elem: '#lunbotu'     //指向容器选择器
     ,anim:  'fade'       //轮播切换动画方式
     ,margin: 'auto'
-    ,width: '1400px'     //设置容器宽度
+    ,width: '1300px'     //设置容器宽度
     ,height: '800px'     //设定轮播容器高度
     ,arrow: 'always'     //始终显示箭头
     ,indicator: 'none'   //指示器位置:不显示
