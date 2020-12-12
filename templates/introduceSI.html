@@ -15,7 +15,7 @@
                         <div class="layui-colla-title" style="background-color: #f8f8f8;font-size:25px; font-weight: bold; color: #000000;">
                             SI模型介绍
                         </div>
-                        <div class="layui-colla-content layui-show" style="background-color:#f8f8f8; overflow:auto; width:1300px; height:180px; font-size:18px; color: #000000; line-height:25pt; text-align: justify; text-indent: 2em;">
+                        <div class="layui-colla-content layui-show" style="background-color:#f8f8f8; overflow:auto; width:97%; height:180px; font-size:18px; color: #000000; line-height:25pt; text-align: justify; text-indent: 2em;">
                             传染病模型研究传染病的传播速度、空间范围、传播途径、动力学机理等问题。由于谣言传播和传染病传播之间的相似性，近年来传染病模型被广泛应用在舆论、谣言等信息传播领域中，以指导对谣言传播的有效地预防和控制。常见的传染病模型分为 SI、SIR模型等。SI 模型考虑了传染病爆发和传播的过程，将人群分为两类—— S 类和 I 类，其中S类为易感者 (Susceptible)，指未得病者，但缺乏免疫能力，与感染者接触后容易受到感染；I 类为感染者 (Infectious)，指染上传染病的人，可以传播给易感者，将其变为感染者。在谣言传播中，S类指的尚未接收到谣言信息的无知者人群，而I类指那些接受并传播谣言的传播者人群。该模型的主要参数为感染率，即传播者将谣言传播给它的邻居节点并使其感染的概率，感染率的取值范围为[0,1]。图1为SI模型在wiki百科网络上模拟传播的结果，其中总人数为104，初始时刻网络中只有一个感染节点，感染率设置为0.3。红色曲线展示了网络中感染节点的数量变化，黑色曲线展示了易感节点的数量变化。图2为SI模型传播动态截图，灰色节点代表易感节点，红色节点代表感染节点。
                         </div>
                     </div>
@@ -24,8 +24,8 @@
             <div class="layui-card" style="background-color: #f8f8f8">
                 <div class="layui-carousel" id="lunbotu" style="margin:0 auto; " lay-anim="" lay-indicator="inside" lay-arrow="hover">
                     <div carousel-item align="center">
-                        <div class="layui-this"><img src="../static/image/SI传播结果.PNG"  style="margin:0 auto;"></div>
-                        <div class=""><img src="../static/image/SI_process.PNG" style="margin:0 auto;"></div>
+                        <div class="layui-this"><img src="../static/image/SI传播结果.PNG"  style="width: 80%;height:100%"></div>
+                        <div class=""><img src="../static/image/SI_process.PNG" style="width: 80%;height:100%"></div>
                     </div>
                 </div>
             </div>
@@ -41,8 +41,8 @@ layui.use('carousel', function(){
         elem: '#lunbotu'     //指向容器选择器
         ,anim:  'fade'       //轮播切换动画方式
         ,margin: 'auto'
-        ,width: '1300px'     //设置容器宽度
-        ,height: '800px'     //设定轮播容器高度
+        , width: '97%'     //设置容器宽度
+        , height: '500px'     //设定轮播容器高度
         ,arrow: 'always'     //始终显示箭头
         ,indicator: 'none'   //指示器位置:不显示
         ,interval: '3000'    //自动切换的时间间隔
