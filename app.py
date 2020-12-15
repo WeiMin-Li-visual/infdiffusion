@@ -31,11 +31,11 @@ app = Flask(__name__)
 app.secret_key = 'dzb'
 socketio = SocketIO(app, async_mode=async_mode)
 # 连接数据库
-connection = pymysql.connect(host='localhost', user='root', password='root', db='po_evolution_platform')
-
-# 得到一个可以执行SQL语句的光标对象
-cur = connection.cursor()  # 执行完毕返回的结果集默认以元组显示
-cur.execute('use po_evolution_platform')  # 执行SQL语句
+# connection = pymysql.connect(host='localhost', user='root', password='root', db='po_evolution_platform')
+#
+# # 得到一个可以执行SQL语句的光标对象
+# cur = connection.cursor()  # 执行完毕返回的结果集默认以元组显示
+# cur.execute('use po_evolution_platform')  # 执行SQL语句
 
 # 配置Flask-Mail
 app.config['MAIL_SERVER'] = 'smtp.qq.com'  # 邮箱服务器
@@ -698,70 +698,17 @@ def SourceDetection():
         percentage = request.form.get('percentage')  # 观测点数量
         iteration = request.form.get('iteration')  # 迭代次数
         method = request.form.get('method')  # 选择观测点方法
-        # mean=request.form.get('mean')#时延均值
-        # variance=request.form.get('variance')#时延方差
-        if percentage != "":
-            if not re.compile(r'^[-+]?[-0-9]\d*\.\d*|[-+]?\.?[0-9]\d*$').match(percentage):
-                err = "输入不合法，请输入0.05-0.9之间的数字"
-            elif float(percentage) < 0.05 or float(percentage) > 0.9:
-                err = "输入错误，请输入0.05-0.9之间的数字"
-        elif percentage == "":
-            err = "输入为空，请输入观测比例"
-        if iteration == "":
-            err = "输入为空，请输入迭代次数"
-        else:
-            if iteration.isdigit() == False:
-                err = "输入不合法，请输入一个整数"
-            elif int(iteration) < 1 or int(iteration) > 10000:
-                err = "迭代次数最少为1，请输入大于1的整数"
+        err=inputJudge(percentage, iteration, method, err)
     if err != "false":
         return render_template('sourceDetection.html', graph_data=sd.graph_data,
                                ObserverNodeList=[], active_records=json.dumps([]), edge_records=json.dumps([]),
                                shortestPath=[], err=err, node_in_Community=node_in_Community)
-    count = 0  # 准确定位到源的次数
-    errorDistance = [0 for index in range(5)]  # 存放每一跳的误差比例
-    all_iteration_dis = []  # [[真实的源，预测的源，第一次迭代误差距离]，第二次迭代预测源与真实源的误差距离，.....,误差列表，所有迭代中的准确率]
-    distance = 0
-    mean_error_distance = 0  # 平均误差距离
-    shortestPath = []  # [[[6(reverse_source), 35(reverse_target), 98.0(边编号）]], [[2, 5, 33.0], [5, 6, 75.0], [6, 35, 98.0]], 记录每个最短路径
-    shortestPath1 = []  # 最短路径列表[[a,b,c],[c,f,g,e]....]
-    active_records1 = []
-    edge_records1 = []
-    ObserverNodeList1 = []
-    for i in range(int(iteration)):
-        candidateCommunity, candidateCommunityObserveInfectedNode, ALLCandidatSourceNode, AllCandidateObserveNode, relSource, CommunitiesList, \
-        SourceNodeInCom, ObserverNodeList, active_records, edge_records,new_node_neigbors_dic = sd.SI_diffusion(float(percentage),
-                                                                                          int(method))
-        preSource, maxValue = sd.GM(ALLCandidatSourceNode, AllCandidateObserveNode,new_node_neigbors_dic)
-        if (preSource == relSource):
-            count += 1
-            errorDistance[0] += 1
-            distance = 0
-        else:
-            distance = nx.shortest_path_length(sd.G, preSource, relSource)
-            errorDistance[distance] += 1
-        all_iteration_dis.append([relSource, preSource, distance])
-        if i == 0:
-            ObserverNodeList1 = ObserverNodeList
-            active_records1 = json.dumps(active_records)
-            edge_records1 = json.dumps(edge_records)
-            for i in ObserverNodeList1:
-                shortestPath1.append(nx.shortest_path(sd.G, i, relSource))
-            for paths in shortestPath1:
-                shortestPath.append([])
-                for i in range(len(paths) - 1):
-                    shortestPath[len(shortestPath) - 1].append(
-                        [paths[i], paths[i + 1], sd.edgeNum[paths[i]][paths[i + 1]]])
-    for j in range(len(errorDistance)):
-        mean_error_distance += errorDistance[j] * j
-        errorDistance[j] = round(errorDistance[j] / int(iteration), 2)  # 误差在各跳数的比例
-    mean_error_distance = round(mean_error_distance / int(iteration), 2)  # 平均误差距离
-    errorDistance = [e for e in errorDistance if e > 0]
-    all_iteration_dis.extend(
-        [errorDistance, round(count / int(iteration), 2), mean_error_distance])  # 误差列表，定位准确率，平均误差距离
+    ObserverNodeList, active_records, edge_records, shortestPath, all_iteration_dis = SD(iteration,
+                                                                                              float(percentage),
+                                                                                            int(method), 1)
     return render_template('sourceDetection.html', graph_data=sd.graph_data,
-                           ObserverNodeList=ObserverNodeList1,
-                           active_records=active_records1, edge_records=edge_records1,
+                           ObserverNodeList=ObserverNodeList,
+                           active_records=active_records, edge_records=edge_records,
                            shortestPath=shortestPath, err=err, all_iteration_dis=all_iteration_dis,
                            node_in_Community=node_in_Community)
 
@@ -816,6 +763,24 @@ def SD(iteration,percentage,method,index):
     return ObserverNodeList1,active_records1,edge_records1,shortestPath,all_iteration_dis
 
 
+def inputJudge(percentage,iteration,method,err):
+    if percentage != "":
+        if not re.compile(r'^[-+]?[-0-9]\d*\.\d*|[-+]?\.?[0-9]\d*$').match(percentage):
+            err = "输入不合法，请输入0.05-0.9之间的数字"
+        elif float(percentage) < 0.05 or float(percentage) > 0.9:
+            err = "输入错误，请输入0.05-0.9之间的数字"
+    elif percentage == "":
+        err = "输入为空，请输入观测比例"
+    if iteration == "":
+        err = "输入为空，请输入迭代次数"
+    else:
+        if iteration.isdigit() == False:
+            err = "输入不合法，请输入一个整数"
+        elif int(iteration) < 1 or int(iteration) > 10000:
+            err = "迭代次数最少为1，请输入大于1的整数"
+    return err
+
+
 # 谣言溯源对比
 @app.route('/sourceDetectionComparison', methods=["GET", "POST"])
 def sourceDetectionComparison():
@@ -842,42 +807,12 @@ def sourceDetectionComparison():
         percentage1 = request.form.get('percentage1')  # 观测点数量
         iteration1 = request.form.get('iteration1')  # 迭代次数
         method1 = request.form.get('method1')  # 选择观测点方法
-        # mean=request.form.get('mean')#时延均值
-        # variance=request.form.get('variance')#时延方差
-        if percentage1 != "":
-            if not re.compile(r'^[-+]?[-0-9]\d*\.\d*|[-+]?\.?[0-9]\d*$').match(percentage1):
-                err1 = "输入不合法，请输入0.05-0.9之间的数字"
-            elif float(percentage1) < 0.05 or float(percentage1) > 0.9:
-                err1 = "输入错误，请输入0.05-0.9之间的数字"
-        elif percentage1 == "":
-            err1 = "输入为空，请输入观测比例"
-        if iteration1 == "":
-            err1 = "输入为空，请输入迭代次数"
-        else:
-            if iteration1.isdigit() == False:
-                err1 = "输入不合法，请输入一个整数"
-            elif int(iteration1) < 1 or int(iteration1) > 10000:
-                err1 = "迭代次数最少为1，请输入大于1的整数"
+        err1=inputJudge(percentage1, iteration1, method1, err1)
 
     percentage2 = request.form.get('percentage2')  # 观测点数量
     iteration2 = request.form.get('iteration2')  # 迭代次数
     method2 = request.form.get('method2')  # 选择观测点方法
-    # mean=request.form.get('mean')#时延均值
-    # variance=request.form.get('variance')#时延方差
-    if percentage2 != "":
-        if not re.compile(r'^[-+]?[-0-9]\d*\.\d*|[-+]?\.?[0-9]\d*$').match(percentage2):
-            err2 = "输入不合法，请输入0.05-0.9之间的数字"
-        elif float(percentage2) < 0.05 or float(percentage2) > 0.9:
-            err2 = "输入错误，请输入0.05-0.9之间的数字"
-    elif percentage2 == "":
-        err2 = "输入为空，请输入观测比例"
-    if iteration2 == "":
-        err2 = "输入为空，请输入迭代次数"
-    else:
-        if iteration2.isdigit() == False:
-            err2 = "输入不合法，请输入一个整数"
-        elif int(iteration2) < 1 or int(iteration2) > 10000:
-            err2 = "迭代次数最少为1，请输入大于1的整数"
+    err2 = inputJudge(percentage2, iteration2, method2, err2)
 
     if err1 != "false" or err2!="false":
 
