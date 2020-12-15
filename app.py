@@ -4,6 +4,7 @@ from flask_socketio import SocketIO
 from threading import Lock
 from algorithm import gameTheory
 from algorithm import sourceDetection as sd
+from algorithm import GE_sourceDetection as GE
 from algorithm import SIModel as si
 from algorithm import SIRModel as sir
 from algorithm import opinionEvolution as oe
@@ -669,6 +670,15 @@ def SIR():
                            times=times, err=err, rateIR=rateIR, rateSI=rateSI, method_type=1)
 
 
+# 介绍谣言溯源
+@app.route('/introduceSourceDetection')
+def introduceSourceDetection():
+    '''
+    TODO
+    :return:
+    '''
+    return render_template('introduceSourceDetection.html')
+
 # 谣言溯源： 刘艳霞
 @app.route('/sourceDetection', methods=["GET", "POST"])
 def SourceDetection():
@@ -720,9 +730,9 @@ def SourceDetection():
     ObserverNodeList1 = []
     for i in range(int(iteration)):
         candidateCommunity, candidateCommunityObserveInfectedNode, ALLCandidatSourceNode, AllCandidateObserveNode, relSource, CommunitiesList, \
-        SourceNodeInCom, ObserverNodeList, active_records, edge_records = sd.SI_diffusion(float(percentage),
+        SourceNodeInCom, ObserverNodeList, active_records, edge_records,new_node_neigbors_dic = sd.SI_diffusion(float(percentage),
                                                                                           int(method))
-        preSource, maxValue = sd.GM(ALLCandidatSourceNode, AllCandidateObserveNode)
+        preSource, maxValue = sd.GM(ALLCandidatSourceNode, AllCandidateObserveNode,new_node_neigbors_dic)
         if (preSource == relSource):
             count += 1
             errorDistance[0] += 1
@@ -733,7 +743,6 @@ def SourceDetection():
         all_iteration_dis.append([relSource, preSource, distance])
         if i == 0:
             ObserverNodeList1 = ObserverNodeList
-            print("edge_records", edge_records)
             active_records1 = json.dumps(active_records)
             edge_records1 = json.dumps(edge_records)
             for i in ObserverNodeList1:
@@ -755,6 +764,137 @@ def SourceDetection():
                            active_records=active_records1, edge_records=edge_records1,
                            shortestPath=shortestPath, err=err, all_iteration_dis=all_iteration_dis,
                            node_in_Community=node_in_Community)
+
+
+def SD(iteration,percentage,method,index):
+    count = 0  # 准确定位到源的次数
+    errorDistance = [0 for index in range(5)]  # 存放每一跳的误差比例
+    all_iteration_dis = []  # [[真实的源，预测的源，第一次迭代误差距离]，第二次迭代预测源与真实源的误差距离，.....,误差列表，所有迭代中的准确率]
+    distance = 0
+    mean_error_distance = 0  # 平均误差距离
+    shortestPath = []  # [[[6(reverse_source), 35(reverse_target), 98.0(边编号）]], [[2, 5, 33.0], [5, 6, 75.0], [6, 35, 98.0]], 记录每个最短路径
+    shortestPath1 = []  # 最短路径列表[[a,b,c],[c,f,g,e]....]
+    active_records1 = []
+    edge_records1 = []
+    ObserverNodeList1 = []
+    for i in range(int(iteration)):
+        if(index==1):
+            candidateCommunity, candidateCommunityObserveInfectedNode, ALLCandidatSourceNode, AllCandidateObserveNode, relSource, CommunitiesList, \
+            SourceNodeInCom, ObserverNodeList, active_records, edge_records, new_node_neigbors_dic = sd.SI_diffusion(
+                percentage,method)
+            preSource, maxValue = sd.GM(ALLCandidatSourceNode, AllCandidateObserveNode, new_node_neigbors_dic)
+        else:
+            candidateCommunity, candidateCommunityObserveInfectedNode, ALLCandidatSourceNode, AllCandidateObserveNode, relSource, CommunitiesList, \
+            SourceNodeInCom, ObserverNodeList, active_records, edge_records = GE.SI_diffusion(percentage,method)
+            preSource, maxValue = GE.GM(ALLCandidatSourceNode, AllCandidateObserveNode)
+        if (preSource == relSource):
+            count += 1
+            errorDistance[0] += 1
+            distance = 0
+        else:
+            distance = nx.shortest_path_length(sd.G, preSource, relSource)
+            errorDistance[distance] += 1
+        all_iteration_dis.append([relSource, preSource, distance])
+        if i == 0:
+            ObserverNodeList1 = ObserverNodeList
+            active_records1 = json.dumps(active_records)
+            edge_records1 = json.dumps(edge_records)
+            for i in ObserverNodeList1:
+                shortestPath1.append(nx.shortest_path(sd.G, i, relSource))
+            for paths in shortestPath1:
+                shortestPath.append([])
+                for i in range(len(paths) - 1):
+                    shortestPath[len(shortestPath) - 1].append(
+                        [paths[i], paths[i + 1], sd.edgeNum[paths[i]][paths[i + 1]]])
+    for j in range(len(errorDistance)):
+        mean_error_distance += errorDistance[j] * j
+        errorDistance[j] = round(errorDistance[j] / int(iteration), 2)  # 误差在各跳数的比例
+    mean_error_distance = round(mean_error_distance / int(iteration), 2)  # 平均误差距离
+    errorDistance = [e for e in errorDistance if e > 0]
+    all_iteration_dis.extend(
+        [errorDistance, round(count / int(iteration), 2), mean_error_distance])  # 误差列表，定位准确率，平均误差距离
+    return ObserverNodeList1,active_records1,edge_records1,shortestPath,all_iteration_dis
+
+
+# 谣言溯源对比
+@app.route('/sourceDetectionComparison', methods=["GET", "POST"])
+def sourceDetectionComparison():
+    node_in_Community = GE.node_in_Community  # 每个节点所在的分区
+    err1 = "false"  # 返回错误信息
+    err2 = "false"  # 返回错误信息
+    if request.method == "GET":
+        # 初始化权重矩阵
+        err1 = "true"
+        err2 = "true"
+        active_records1 = json.dumps([])
+        active_records2 = json.dumps([])
+        edge_records1 = json.dumps([])
+        edge_records2 = json.dumps([])
+        return render_template('sourceDetectionComparison.html', graph_data=sd.graph_data,
+                               ObserverNodeList1=[], active_records1=active_records1,
+                               edge_records1=edge_records1,
+                               shortestPath1=[], err1=err1,err2=err2, node_in_Community=node_in_Community,
+                               ObserverNodeList2=[], active_records2=active_records2,
+                               edge_records2=edge_records2,
+                               shortestPath2=[],all_iteration_dis1=[],all_iteration_dis2=[]
+                               )
+    else:  # request：请求对象，获取请求方式数据
+        percentage1 = request.form.get('percentage1')  # 观测点数量
+        iteration1 = request.form.get('iteration1')  # 迭代次数
+        method1 = request.form.get('method1')  # 选择观测点方法
+        # mean=request.form.get('mean')#时延均值
+        # variance=request.form.get('variance')#时延方差
+        if percentage1 != "":
+            if not re.compile(r'^[-+]?[-0-9]\d*\.\d*|[-+]?\.?[0-9]\d*$').match(percentage1):
+                err1 = "输入不合法，请输入0.05-0.9之间的数字"
+            elif float(percentage1) < 0.05 or float(percentage1) > 0.9:
+                err1 = "输入错误，请输入0.05-0.9之间的数字"
+        elif percentage1 == "":
+            err1 = "输入为空，请输入观测比例"
+        if iteration1 == "":
+            err1 = "输入为空，请输入迭代次数"
+        else:
+            if iteration1.isdigit() == False:
+                err1 = "输入不合法，请输入一个整数"
+            elif int(iteration1) < 1 or int(iteration1) > 10000:
+                err1 = "迭代次数最少为1，请输入大于1的整数"
+
+    percentage2 = request.form.get('percentage2')  # 观测点数量
+    iteration2 = request.form.get('iteration2')  # 迭代次数
+    method2 = request.form.get('method2')  # 选择观测点方法
+    # mean=request.form.get('mean')#时延均值
+    # variance=request.form.get('variance')#时延方差
+    if percentage2 != "":
+        if not re.compile(r'^[-+]?[-0-9]\d*\.\d*|[-+]?\.?[0-9]\d*$').match(percentage2):
+            err2 = "输入不合法，请输入0.05-0.9之间的数字"
+        elif float(percentage2) < 0.05 or float(percentage2) > 0.9:
+            err2 = "输入错误，请输入0.05-0.9之间的数字"
+    elif percentage2 == "":
+        err2 = "输入为空，请输入观测比例"
+    if iteration2 == "":
+        err2 = "输入为空，请输入迭代次数"
+    else:
+        if iteration2.isdigit() == False:
+            err2 = "输入不合法，请输入一个整数"
+        elif int(iteration2) < 1 or int(iteration2) > 10000:
+            err2 = "迭代次数最少为1，请输入大于1的整数"
+
+    if err1 != "false" or err2!="false":
+
+        return render_template('sourceDetectionComparison.html', graph_data=sd.graph_data,
+                               ObserverNodeList1=[], active_records1=json.dumps([]), edge_records1=json.dumps([]),
+                               shortestPath1=[], err1=err1,err2=err2, node_in_Community=node_in_Community,
+                               ObserverNodeList2=[], active_records2=json.dumps([]), edge_records2=json.dumps([]),
+                               shortestPath2=[],all_iteration_dis1=[],all_iteration_dis2=[])
+    ObserverNodeList1, active_records1, edge_records1, shortestPath1, all_iteration_dis1=SD(iteration1,float(percentage1),int(method1),1)
+    ObserverNodeList2, active_records2, edge_records2, shortestPath2, all_iteration_dis2 = SD(iteration2,float(percentage2),int(method2), 2)
+    return render_template('sourceDetectionComparison.html', graph_data=sd.graph_data,
+                           ObserverNodeList1=ObserverNodeList1,
+                           active_records1=active_records1, edge_records1=edge_records1,
+                           shortestPath1=shortestPath1, err1=err1,err2=err2, all_iteration_dis1=all_iteration_dis1,
+                           node_in_Community=node_in_Community,ObserverNodeList2=ObserverNodeList2,
+                           active_records2=active_records2, edge_records2=edge_records2,
+                           shortestPath2=shortestPath2, all_iteration_dis2=all_iteration_dis2)
 
 
 # 介绍霍克斯过程

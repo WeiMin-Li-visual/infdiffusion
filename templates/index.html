@@ -78,7 +78,7 @@
 
         <!-- 头部区域（可配合layui已有的水平导航） -->
         <ul class="layui-nav layui-layout-left">
-            <li class="layui-nav-item"><a href="javascript:" onclick="skipto('introduce')">使用说明</a></li>
+            <li class="layui-nav-item"><a href="javascript:;" onclick="skipto('introduce')">使用说明</a></li>
             <li class="layui-nav-item"><a href="javascript:" onclick="skipto('aboutUs')">关于我们</a></li>
             {#                <li class="layui-nav-item"><a href="javascript:" onclick="skipto('joinIn')">加入我们</a></li>#}
         </ul>
@@ -147,9 +147,15 @@
                     </dl>
                 </li>
                 <!-- 谣言溯源 -->
-                <li class="layui-nav-item">
-                    <a href="javascript:;" style="font-size: 18px;" onclick="skipto('sourceDetection')">谣言溯源</a>
-                </li>
+                 <li class="layui-nav-item">
+                      <a href="javascript:;" style="font-size: 18px;">谣言溯源</a>
+                      <dl class="layui-nav-child">
+                          <dd><a onclick="skipto('introduceSourceDetection')" style="cursor:pointer; font-size: 12px">模型介绍</a></dd>
+                          <dd><a onclick="skipto('sourceDetection')" style="cursor:pointer; font-size: 12px">模型展示</a></dd>
+                          <dd><a onclick="skipto('sourceDetectionComparison')" style="cursor:pointer; font-size: 12px">模型对比</a></dd>
+                      </dl>
+
+                  </li>
                 <!-- 行为传播 -->
                 <li class="layui-nav-item">
                     <a href="javascript:;" style="font-size: 18px;">行为传播</a>
