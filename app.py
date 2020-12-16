@@ -4,11 +4,12 @@ from flask_socketio import SocketIO
 from threading import Lock
 from algorithm import gameTheory
 from algorithm import sourceDetection as sd
-from algorithm import GE_sourceDetection as GE
 from algorithm import SIModel as si
 from algorithm import SIRModel as sir
 from algorithm import opinionEvolution as oe
+from algorithm import hawkesProcess
 import pandas as pd
+import numpy as np
 import json
 import random
 import copy
@@ -22,6 +23,7 @@ import os
 import io
 import datetime
 import re
+
 
 thread_lock = Lock()
 
@@ -834,23 +836,97 @@ def sourceDetectionComparison():
 
 # 介绍霍克斯过程
 @app.route('/introduceHawks')
-def introduceHawks():
-    '''
-    TODO
-    :return:
-    '''
-    return render_template('introduceHawks.html')
+def introduceHawkes():
+    return render_template('introduceHawkesProcess.html')
 
 
 # 基于霍克斯过程的行为扩散
 @app.route('/Hawks')
 def Hawks():
-    '''
-    TODO
-    :return:
-    '''
-    return render_template('Hawks.html')
+    dim = 100
+    omega = 1
+    T = 1000
+    numevents = 100
+    mu = np.random.uniform(0, 0.1, size=dim)
+    alpha = np.random.uniform(0, 1, size=dim ** 2)
+    alpha = alpha.reshape((dim, dim))
+    ajacency_matrix = np.zeros((dim, dim), dtype=int)
+    f = open('static/data/nodestructure.txt', 'r')
+    edges = []
+    for line in f.readlines():
+        edg = line.split()
+        edges.append((int(edg[1]), int(edg[0])))
+        ajacency_matrix[int(edg[0])][int(edg[1])] = 1
+    f.close()
+    G = nx.Graph(edges)
+    # 记录每个节点的位置信息
+    pos = nx.drawing.spring_layout(G)
+    node_coordinate = []
+    for i in range(dim):
+        node_coordinate.append([])
+    for i, j in pos.items():
+        node_coordinate[i - 1].append(float(j[0]))
+        node_coordinate[i - 1].append(float(j[1]))
+    # 设置传给前端的节点数据边数据的json串
+    graph_data_json = {}
+    nodes_data_json = []
+    for node in range(dim):
+        nodes_data_json.append({})
+        nodes_data_json[node]['attributes'] = {}
+        nodes_data_json[node]['attributes']['modularity_class'] = 0
+        nodes_data_json[node]['id'] = str(node)
+        nodes_data_json[node]['category'] = 0
+        nodes_data_json[node]['itemStyle'] = ''
+        nodes_data_json[node]['label'] = {}
+        nodes_data_json[node]['label']['normal'] = {}
+        nodes_data_json[node]['label']['normal']['show'] = 'false'
+        nodes_data_json[node]['name'] = str(node)
+        nodes_data_json[node]['symbolSize'] = 35
+        nodes_data_json[node]['value'] = 15
+        nodes_data_json[node]['x'] = node_coordinate[node][0]
+        nodes_data_json[node]['y'] = node_coordinate[node][1]
+    links_data_json = []
+    for link in edges:
+        link_id = len(links_data_json)
+        links_data_json.append({})
+        links_data_json[len(links_data_json) - 1]['id'] = link_id
+        links_data_json[len(links_data_json) - 1]['lineStyle'] = {}
+        links_data_json[len(links_data_json) - 1]['lineStyle']['normal'] = {}
+        links_data_json[len(links_data_json) - 1]['name'] = 'null'
 
+        # biaoji:这里和原来代码不一样原来;
+        links_data_json[len(links_data_json) - 1]['source'] = str(link[0])
+        links_data_json[len(links_data_json) - 1]['target'] = str(link[1])
+    # print(links_data_json)
+    graph_data_json['nodes'] = nodes_data_json
+    graph_data_json['links'] = links_data_json
+    # print(graph_data_json['nodes'])
+
+    graph_data = json.dumps(graph_data_json)
+    # print(graph_data)
+
+    # 执行基于霍克斯过程的预测
+
+    predict_events = hawkesProcess.multidimensional_sim(mu, alpha, omega, T, ajacency_matrix, 100)
+    print(len(predict_events))
+    print(predict_events)
+    numofevents = [len(predict_events), len(predict_events)]
+    print(numofevents)
+
+    edge_record = []
+    for item in predict_events:
+        if item[0] != item[1]:
+            edge_record.append(edges.index((item[1], item[0])))
+    predict_events = json.dumps(predict_events)
+
+    print(predict_events)
+
+    edge_record = json.dumps(edge_record)
+    print(edge_record)
+    numofevents = json.dumps(numofevents)
+    print(numofevents)
+    return render_template('hawkes.html', graph_data=graph_data, predict_events=predict_events, edge_record=edge_record,
+                           numofevents=numofevents)
 
 # 介绍博弈论
 @app.route('/introduceGameTheory')

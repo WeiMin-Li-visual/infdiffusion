@@ -251,18 +251,45 @@
         </div>
     <br>
         <br>
-    <h2>六.行为传播模块</h2>
+    <h2 style="font-weight: bold">六.行为传播模块</h2>
+    <br>
+    <p style="font-size:18px">点击左侧导航中的行为传播按钮，包含两个行为传播模块：基于霍克斯过程的行为传播模块和基于博弈论的不确定行为传播模块。</p>
+    <br>
+        <h3 style="font-size:18px;line-height:25pt;font-weight: bold">1.基于霍克斯过程的行为传播模块</h3>
+        <p style="font-size:18px;line-height:25pt">在行为传播模块下，第一个子模块是基于霍克斯过程的行为传播模块，该子模块分为模型介绍、模型展示两部分。</p>
+        <br>
+        <h4 style="font-size:18px;line-height:25pt;font-weight: bold">(1)模型介绍</h4>
+        <br>
+        <p style="font-size:18px;line-height:25pt">
+            点击左侧导航栏基于霍克斯过程中的模型介绍，进入页面后将显示一段文字和两张图片。文字为霍克斯过程的介绍，第一张图片为基于霍克斯过程模拟行为传播的开始阶段，第二张图片为基于霍克斯过程模拟行为传播的结果。
+        </p>
+        <br>
+        <div align="center">
+        <img width = "90%" src = "../static/image/introduceImg/Hawkes1.png">
+        </div>
+        <br>
+        <br>
+        <h4 style="font-size:18px;line-height:25pt;font-weight: bold">(2)模型展示</h4>
+        <br>
+        <p style="font-size:18px;line-height:25pt;">
+            点击左侧导航栏基于霍克斯过程中的模型展示，进入页面后将显示霍克斯过程在含有一百个节点的网络图上预测行为传播的结果。对于霍克斯过程的相关参数，使用numpy.random.uniform函数随机生成。由于所选网络较小，为保证行为传播的节点尽可能多，预先采用PageRank算法对该网络中的节点权值进行计算，选择权值最大的65号节点作为传播初始结点。接着，初始结点会向关注该节点的邻居节点进行行为传播。
+        </p>
+        <br>
+        <div align="center">
+        <img width = "90%" src = "../static/image/introduceImg/Hawkes2.png">
+        </div>
+        <br>
+        <p style="font-size:18px;line-height:25pt;">
+            对于每个已传播节点，其可以向关注该节点的邻居节点进行行为传播，限制其与其每个邻居之间的行为传播只有至多一次。对于一个节点，若其关注的节点中有多个已传播节点，则对这些已传播节点的传播时间进行排序，选择时间最大的邻居节点，并建立到该节点之间的传播链接，图中为加粗灰色连边，当一个节点没有关注该节点的邻居节点时，传播过程结束。
+        </p>
+        <br>
+        <div align="center">
+        <img width = "90%" src = "../static/image/introduceImg/Hawkes3.png">
+        </div>
+        <br>
+    <br>
 
-    <br>
-    <p style="font-size:18px">点击左侧导航中的行为传播按钮，包含两个行为传播模块：基于霍克斯过程的行为传播模块和基于博弈论的不确定行为传播模块</p>
-    <br>
-
-    <br>
-    <h3>1.基于霍克斯过程的行为传播模块</h3>
-    <br>
-    <br>
-
-    <h3>2.基于博弈论的不确定行为传播模块</h3>
+    <h3 style="font-weight: bold">2.基于博弈论的不确定行为传播模块</h3>
     <br>
     <p style="font-size:18px">点击左侧导航中行为传播模块下的基于博弈论按钮进入该子模块，该子模块分为模型介绍、模型展示和模型对比三部分</p>
     <br>
