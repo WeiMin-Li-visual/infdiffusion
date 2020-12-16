@@ -92,16 +92,81 @@
         </div>
     <br>
     <br>
-    <br>
-    <h2>四.传播模型模块</h2>
-    <br>
-    <br>
-    <h3>1.SI传播模型</h3>
-    <br>
-    <br>
-    <h3>2.SIR传播模型</h3>
-    <br>
-    <br>
+        <br>
+        <h2 style="font-weight: bold">四.传播模型模块</h2>
+        <br>
+        <p style="font-size:18px;line-height:25pt;">点击左侧导航进入传播模型模块，该模块包括SI模型和SIR模型两个子模块。</p>
+        <br>
+        <h3 style="font-size:18px;line-height:25pt;font-weight: bold">1.SI传播模型</h3>
+        <br>
+        <p style="font-size:18px;line-height:25pt;">点击左侧导航“SI模型”进入该界面后，该界面下有模型介绍和模型展示两个部分。</p>
+        <br>
+        <h4 style="font-size:18px;line-height:25pt;font-weight: bold">(1)模型介绍</h4>
+        <br>
+        <p style="font-size:18px;line-height:25pt">点击左侧导航进入SI模型介绍模块后，该页面展示了关于SI模型的理论介绍以及图片展示。页面上部分是关于SI模型的理论介绍，鼠标点击“SI模型介绍”标题栏可以收起模型介绍相关内容，用户可以自由阅读了解SI模型相关知识容。页面下半部分是关于SI模型的图片展示，两张图片为轮播播放，用户也可以点击右（左）侧按钮查看下（上）一张图片。</p>
+        <br>
+        <div align="center">
+        <img width = "90%" src = "../static/image/introduceImg/SIModel1.png">
+        </div>
+        <br>
+        <h4 style="font-size:18px;line-height:25pt;font-weight: bold">(2)模型展示</h4>
+        <br>
+        <p style="font-size:18px;line-height:25pt;">点击左侧导航栏进入该模块后，该模块为用户展示了当前社交网络图中SI模型下谣言扩散过程。进入初始界面显示了网络的初始结构。在右上角设有输入框和提交按钮，用户输入感染率，点击提交即可开始SI模型的模拟传播演示</p>
+        <br>
+        <div align="center">
+        <img width = "90%" src = "../static/image/introduceImg/SIModel2.png">
+        </div>
+        <br>
+        <p style="font-size:18px;line-height:25pt;">网络默认为Wiki百科网络，共有104个节点，节点编号从0开始，图中灰色节点表示易感节点，红色节点表示感染节点。在初始时刻，网络随机产生一个感染节点，其余节点均为易感节点，根据用户配置的感染率参数，将谣言通过邻居节点传播下去。界面会动态显示当前节点感染其邻居的过程以及当前被感染的节点，在左上角会显示当前时间片网络中新增感染节点的个数以及被感染的节点等提示信息，以便用户更直观清晰的了解网络中节点的的感染过程。</p>
+        <br>
+        <div align="center">
+        <img width = "90%" src = "../static/image/introduceImg/SIModel3.png">
+        </div>
+        <br>
+        <p style="font-size:18px;line-height:25pt;">当网络中所有节点均已被感染，传播过程结束，界面会自动生成传播结果折线图。该图分析了传播过程中每一时间片易感节点和感染节点数量的变化，灰色的曲线表示易感节点，红色的曲线表示感染节点。</p>
+        <br>
+        <div align="center">
+        <img width = "90%" src = "../static/image/introduceImg/SIModel4.png">
+        </div>
+        <br>
+        <h3 style="font-size:18px;line-height:25pt;font-weight: bold">2.SIR传播模型</h3>
+        <br>
+        <p style="font-size:18px;line-height:25pt;">点击左侧导航“SIR模型”进入该界面后，该界面下有模型介绍和模型展示两个部分。</p>
+        <br>
+        <h4 style="font-size:18px;line-height:25pt;font-weight: bold">(1)模型介绍</h4>
+        <br>
+        <p style="font-size:18px;line-height:25pt;">点击左侧导航进入SIR模型介绍模块后，该页面展示了关于SIR模型的理论介绍以及图片展示。页面上部分是关于SIR模型的理论介绍，鼠标点击“SIR模型介绍”标题栏可以收起模型介绍相关内容，用户可以自由阅读了解SIR模型相关知识容。页面下半部分是关于SIR模型的图片展示，两张图片为轮播播放，用户也可以点击右（左）侧按钮查看下（上）一张图片。</p>
+        <br>
+        <div align="center">
+        <img width = "90%" src = "../static/image/introduceImg/SIRModel1.png">
+        </div>
+        <br>
+        <h4 style="font-size:18px;line-height:25pt;font-weight: bold">(2)模型展示</h4>
+        <br>
+        <p style="font-size:18px;line-height:25pt;">
+            点击左侧导航栏进入该模块后，该模块为用户展示了当前社交网络图中SIR模型下谣言扩散过程，初始页面显示了网络的初始结构。在右上角设有输入框和提交按钮，用户自定义输入感染率和恢复率，点击提交即可开始SIR模型的模拟传播演示。
+        </p>
+        <br>
+        <div align="center">
+        <img width = "90%" src = "../static/image/introduceImg/SIRModel2.png">
+        </div>
+        <br>
+        <p style="font-size:18px;line-height:25pt;">
+            网络默认为Wiki百科网络，共有104个节点，节点编号从0开始，图中灰色节点表示易感节点，红色节点表示感染节点，绿色节点为恢复节点。在初始时刻，网络随机产生一个感染节点，其余节点均为易感节点，根据用户输入的感染率，将谣言通过邻居节点传播下去。与此同时，被感染的节点以一定的概率自愈成为恢复节点，即恢复概率。界面会动态显示当前节点感染其邻居的过程，动态的显示当前被感染的节点以及通过自愈恢复的节点，在左上角会显示当前时间片网络中新增感染节点的个数，新增恢复节点个数以及被感染的节点和恢复节点等提示信息，以便用户更直观清晰的了解网络中节点的的感染和恢复的过程。
+        </p>
+        <br>
+        <div align="center">
+        <img width = "90%" src = "../static/image/introduceImg/SIRModel3.png">
+        </div>
+        <br>
+        <p style="font-size:18px;line-height:25pt;">
+            当网络中不存在感染节点，传播过程结束，界面会自动生成传播结果折线图。该图分析了传播过程中每一时间片易感节点，感染节点和恢复节点数量的变化，灰色的曲线表示易感节点，红色的曲线表示感染节点，绿色曲线为恢复节点。
+        </p>
+        <br>
+        <div align="center">
+        <img width = "90%" src = "../static/image/introduceImg/SIRModel4.png">
+        </div>
+        <br>
 
     <h2>五.谣言溯源模块</h2>
     <br>

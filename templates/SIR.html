@@ -25,13 +25,13 @@
         <div class="layui-form-item">
             <label class="layui-form-label" style="font-size: 20px">感染率:</label>
             <div class="layui-input-block">
-                <input type="text" name="rateSI" placeholder="请输入感染率" autocomplete="on" class="layui-input" >
+                <input type="text" name="rateSI" placeholder="请输入感染率" autocomplete="off" class="layui-input" >
                 <i class="layui-icon layui-icon-about" title="请输入0-1之间的数值"></i>
             </div>
             <div class="layui-form-item">
                 <label class="layui-form-label" style="font-size: 20px">恢复率:</label>
                 <div class="layui-input-block">
-                    <input type="text" name="rateIR" placeholder="请输入恢复率" autocomplete="on" class="layui-input" >
+                    <input type="text" name="rateIR" placeholder="请输入恢复率" autocomplete="off" class="layui-input" >
                     <i class="layui-icon layui-icon-about" title="请输入0-1之间的数值"></i>
                 </div>
             </div>
@@ -233,7 +233,7 @@
                     update_show(text, subtext, myChart);
                 }
             }
-        }, 500);
+        }, 50);
     }
     else{
         if(err!="true")//输入错误提示
