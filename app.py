@@ -7,7 +7,10 @@ from algorithm import sourceDetection as sd
 from algorithm import SIModel as si
 from algorithm import SIRModel as sir
 from algorithm import opinionEvolution as oe
+from algorithm import hawkesProcess
+from algorithm import GE_sourceDetection as GE
 import pandas as pd
+import numpy as np
 import json
 import random
 import copy
@@ -669,6 +672,15 @@ def SIR():
                            times=times, err=err, rateIR=rateIR, rateSI=rateSI, method_type=1)
 
 
+# 介绍谣言溯源
+@app.route('/introduceSourceDetection')
+def introduceSourceDetection():
+    '''
+    TODO
+    :return:
+    '''
+    return render_template('introduceSourceDetection.html')
+
 # 谣言溯源： 刘艳霞
 @app.route('/sourceDetection', methods=["GET", "POST"])
 def SourceDetection():
@@ -688,26 +700,22 @@ def SourceDetection():
         percentage = request.form.get('percentage')  # 观测点数量
         iteration = request.form.get('iteration')  # 迭代次数
         method = request.form.get('method')  # 选择观测点方法
-        # mean=request.form.get('mean')#时延均值
-        # variance=request.form.get('variance')#时延方差
-        if percentage != "":
-            if not re.compile(r'^[-+]?[-0-9]\d*\.\d*|[-+]?\.?[0-9]\d*$').match(percentage):
-                err = "输入不合法，请输入0.05-0.9之间的数字"
-            elif float(percentage) < 0.05 or float(percentage) > 0.9:
-                err = "输入错误，请输入0.05-0.9之间的数字"
-        elif percentage == "":
-            err = "输入为空，请输入观测比例"
-        if iteration == "":
-            err = "输入为空，请输入迭代次数"
-        else:
-            if iteration.isdigit() == False:
-                err = "输入不合法，请输入一个整数"
-            elif int(iteration) < 1 or int(iteration) > 10000:
-                err = "迭代次数最少为1，请输入大于1的整数"
+        err=inputJudge(percentage, iteration, method, err)
     if err != "false":
         return render_template('sourceDetection.html', graph_data=sd.graph_data,
                                ObserverNodeList=[], active_records=json.dumps([]), edge_records=json.dumps([]),
                                shortestPath=[], err=err, node_in_Community=node_in_Community)
+    ObserverNodeList, active_records, edge_records, shortestPath, all_iteration_dis = SD(iteration,
+                                                                                              float(percentage),
+                                                                                            int(method), 1)
+    return render_template('sourceDetection.html', graph_data=sd.graph_data,
+                           ObserverNodeList=ObserverNodeList,
+                           active_records=active_records, edge_records=edge_records,
+                           shortestPath=shortestPath, err=err, all_iteration_dis=all_iteration_dis,
+                           node_in_Community=node_in_Community)
+
+
+def SD(iteration,percentage,method,index):
     count = 0  # 准确定位到源的次数
     errorDistance = [0 for index in range(5)]  # 存放每一跳的误差比例
     all_iteration_dis = []  # [[真实的源，预测的源，第一次迭代误差距离]，第二次迭代预测源与真实源的误差距离，.....,误差列表，所有迭代中的准确率]
@@ -719,10 +727,15 @@ def SourceDetection():
     edge_records1 = []
     ObserverNodeList1 = []
     for i in range(int(iteration)):
-        candidateCommunity, candidateCommunityObserveInfectedNode, ALLCandidatSourceNode, AllCandidateObserveNode, relSource, CommunitiesList, \
-        SourceNodeInCom, ObserverNodeList, active_records, edge_records = sd.SI_diffusion(float(percentage),
-                                                                                          int(method))
-        preSource, maxValue = sd.GM(ALLCandidatSourceNode, AllCandidateObserveNode)
+        if(index==1):
+            candidateCommunity, candidateCommunityObserveInfectedNode, ALLCandidatSourceNode, AllCandidateObserveNode, relSource, CommunitiesList, \
+            SourceNodeInCom, ObserverNodeList, active_records, edge_records, new_node_neigbors_dic = sd.SI_diffusion(
+                percentage,method)
+            preSource, maxValue = sd.GM(ALLCandidatSourceNode, AllCandidateObserveNode, new_node_neigbors_dic)
+        else:
+            candidateCommunity, candidateCommunityObserveInfectedNode, ALLCandidatSourceNode, AllCandidateObserveNode, relSource, CommunitiesList, \
+            SourceNodeInCom, ObserverNodeList, active_records, edge_records = GE.SI_diffusion(percentage,method)
+            preSource, maxValue = GE.GM(ALLCandidatSourceNode, AllCandidateObserveNode)
         if (preSource == relSource):
             count += 1
             errorDistance[0] += 1
@@ -733,7 +746,6 @@ def SourceDetection():
         all_iteration_dis.append([relSource, preSource, distance])
         if i == 0:
             ObserverNodeList1 = ObserverNodeList
-            print("edge_records", edge_records)
             active_records1 = json.dumps(active_records)
             edge_records1 = json.dumps(edge_records)
             for i in ObserverNodeList1:
@@ -750,32 +762,171 @@ def SourceDetection():
     errorDistance = [e for e in errorDistance if e > 0]
     all_iteration_dis.extend(
         [errorDistance, round(count / int(iteration), 2), mean_error_distance])  # 误差列表，定位准确率，平均误差距离
-    return render_template('sourceDetection.html', graph_data=sd.graph_data,
-                           ObserverNodeList=ObserverNodeList1,
-                           active_records=active_records1, edge_records=edge_records1,
-                           shortestPath=shortestPath, err=err, all_iteration_dis=all_iteration_dis,
-                           node_in_Community=node_in_Community)
+    return ObserverNodeList1,active_records1,edge_records1,shortestPath,all_iteration_dis
+
+
+def inputJudge(percentage,iteration,method,err):
+    if percentage != "":
+        if not re.compile(r'^[-+]?[-0-9]\d*\.\d*|[-+]?\.?[0-9]\d*$').match(percentage):
+            err = "输入不合法，请输入0.05-0.9之间的数字"
+        elif float(percentage) < 0.05 or float(percentage) > 0.9:
+            err = "输入错误，请输入0.05-0.9之间的数字"
+    elif percentage == "":
+        err = "输入为空，请输入观测比例"
+    if iteration == "":
+        err = "输入为空，请输入迭代次数"
+    else:
+        if iteration.isdigit() == False:
+            err = "输入不合法，请输入一个整数"
+        elif int(iteration) < 1 or int(iteration) > 10000:
+            err = "迭代次数最少为1，请输入大于1的整数"
+    return err
+
+
+# 谣言溯源对比
+@app.route('/sourceDetectionComparison', methods=["GET", "POST"])
+def sourceDetectionComparison():
+    node_in_Community = GE.node_in_Community  # 每个节点所在的分区
+    err1 = "false"  # 返回错误信息
+    err2 = "false"  # 返回错误信息
+    if request.method == "GET":
+        # 初始化权重矩阵
+        err1 = "true"
+        err2 = "true"
+        active_records1 = json.dumps([])
+        active_records2 = json.dumps([])
+        edge_records1 = json.dumps([])
+        edge_records2 = json.dumps([])
+        return render_template('sourceDetectionComparison.html', graph_data=sd.graph_data,
+                               ObserverNodeList1=[], active_records1=active_records1,
+                               edge_records1=edge_records1,
+                               shortestPath1=[], err1=err1,err2=err2, node_in_Community=node_in_Community,
+                               ObserverNodeList2=[], active_records2=active_records2,
+                               edge_records2=edge_records2,
+                               shortestPath2=[],all_iteration_dis1=[],all_iteration_dis2=[]
+                               )
+    else:  # request：请求对象，获取请求方式数据
+        percentage1 = request.form.get('percentage1')  # 观测点数量
+        iteration1 = request.form.get('iteration1')  # 迭代次数
+        method1 = request.form.get('method1')  # 选择观测点方法
+        err1=inputJudge(percentage1, iteration1, method1, err1)
+
+    percentage2 = request.form.get('percentage2')  # 观测点数量
+    iteration2 = request.form.get('iteration2')  # 迭代次数
+    method2 = request.form.get('method2')  # 选择观测点方法
+    err2 = inputJudge(percentage2, iteration2, method2, err2)
+
+    if err1 != "false" or err2!="false":
+
+        return render_template('sourceDetectionComparison.html', graph_data=sd.graph_data,
+                               ObserverNodeList1=[], active_records1=json.dumps([]), edge_records1=json.dumps([]),
+                               shortestPath1=[], err1=err1,err2=err2, node_in_Community=node_in_Community,
+                               ObserverNodeList2=[], active_records2=json.dumps([]), edge_records2=json.dumps([]),
+                               shortestPath2=[],all_iteration_dis1=[],all_iteration_dis2=[])
+    ObserverNodeList1, active_records1, edge_records1, shortestPath1, all_iteration_dis1=SD(iteration1,float(percentage1),int(method1),1)
+    ObserverNodeList2, active_records2, edge_records2, shortestPath2, all_iteration_dis2 = SD(iteration2,float(percentage2),int(method2), 2)
+    return render_template('sourceDetectionComparison.html', graph_data=sd.graph_data,
+                           ObserverNodeList1=ObserverNodeList1,
+                           active_records1=active_records1, edge_records1=edge_records1,
+                           shortestPath1=shortestPath1, err1=err1,err2=err2, all_iteration_dis1=all_iteration_dis1,
+                           node_in_Community=node_in_Community,ObserverNodeList2=ObserverNodeList2,
+                           active_records2=active_records2, edge_records2=edge_records2,
+                           shortestPath2=shortestPath2, all_iteration_dis2=all_iteration_dis2)
 
 
 # 介绍霍克斯过程
 @app.route('/introduceHawks')
-def introduceHawks():
-    '''
-    TODO
-    :return:
-    '''
-    return render_template('introduceHawks.html')
+def introduceHawkes():
+    return render_template('introduceHawkesProcess.html')
 
 
 # 基于霍克斯过程的行为扩散
 @app.route('/Hawks')
 def Hawks():
-    '''
-    TODO
-    :return:
-    '''
-    return render_template('Hawks.html')
+    dim = 100
+    omega = 1
+    T = 1000
+    numevents = 100
+    mu = np.random.uniform(0, 0.1, size=dim)
+    alpha = np.random.uniform(0, 1, size=dim ** 2)
+    alpha = alpha.reshape((dim, dim))
+    ajacency_matrix = np.zeros((dim, dim), dtype=int)
+    f = open('static/data/nodestructure.txt', 'r')
+    edges = []
+    for line in f.readlines():
+        edg = line.split()
+        edges.append((int(edg[1]), int(edg[0])))
+        ajacency_matrix[int(edg[0])][int(edg[1])] = 1
+    f.close()
+    G = nx.Graph(edges)
+    # 记录每个节点的位置信息
+    pos = nx.drawing.spring_layout(G)
+    node_coordinate = []
+    for i in range(dim):
+        node_coordinate.append([])
+    for i, j in pos.items():
+        node_coordinate[i - 1].append(float(j[0]))
+        node_coordinate[i - 1].append(float(j[1]))
+    # 设置传给前端的节点数据边数据的json串
+    graph_data_json = {}
+    nodes_data_json = []
+    for node in range(dim):
+        nodes_data_json.append({})
+        nodes_data_json[node]['attributes'] = {}
+        nodes_data_json[node]['attributes']['modularity_class'] = 0
+        nodes_data_json[node]['id'] = str(node)
+        nodes_data_json[node]['category'] = 0
+        nodes_data_json[node]['itemStyle'] = ''
+        nodes_data_json[node]['label'] = {}
+        nodes_data_json[node]['label']['normal'] = {}
+        nodes_data_json[node]['label']['normal']['show'] = 'false'
+        nodes_data_json[node]['name'] = str(node)
+        nodes_data_json[node]['symbolSize'] = 35
+        nodes_data_json[node]['value'] = 15
+        nodes_data_json[node]['x'] = node_coordinate[node][0]
+        nodes_data_json[node]['y'] = node_coordinate[node][1]
+    links_data_json = []
+    for link in edges:
+        link_id = len(links_data_json)
+        links_data_json.append({})
+        links_data_json[len(links_data_json) - 1]['id'] = link_id
+        links_data_json[len(links_data_json) - 1]['lineStyle'] = {}
+        links_data_json[len(links_data_json) - 1]['lineStyle']['normal'] = {}
+        links_data_json[len(links_data_json) - 1]['name'] = 'null'
 
+        # biaoji:这里和原来代码不一样原来;
+        links_data_json[len(links_data_json) - 1]['source'] = str(link[0])
+        links_data_json[len(links_data_json) - 1]['target'] = str(link[1])
+    # print(links_data_json)
+    graph_data_json['nodes'] = nodes_data_json
+    graph_data_json['links'] = links_data_json
+    # print(graph_data_json['nodes'])
+
+    graph_data = json.dumps(graph_data_json)
+    # print(graph_data)
+
+    # 执行基于霍克斯过程的预测
+
+    predict_events = hawkesProcess.multidimensional_sim(mu, alpha, omega, T, ajacency_matrix, 100)
+    print(len(predict_events))
+    print(predict_events)
+    numofevents = [len(predict_events), len(predict_events)]
+    print(numofevents)
+
+    edge_record = []
+    for item in predict_events:
+        if item[0] != item[1]:
+            edge_record.append(edges.index((item[1], item[0])))
+    predict_events = json.dumps(predict_events)
+
+    print(predict_events)
+
+    edge_record = json.dumps(edge_record)
+    print(edge_record)
+    numofevents = json.dumps(numofevents)
+    print(numofevents)
+    return render_template('hawkes.html', graph_data=graph_data, predict_events=predict_events, edge_record=edge_record,
+                           numofevents=numofevents)
 
 # 介绍博弈论
 @app.route('/introduceGameTheory')

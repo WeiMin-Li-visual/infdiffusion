@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<!DOCTYPE html>
+<html style="height: 100%; initial-scale: 0.1">
+<head>
+    <meta charset="UTF-8">
+    <title>模型介绍</title>
+    <script type="text/javascript" src="../static/layui/layui.js"></script>
+    <link rel="stylesheet" href="../static/layui/css/layui.css" media="all">
+    <style>
+        #container {
+            position: absolute;
+            left: 10%;
+        }
+
+        #control {
+            margin-top: 30px;
+            width: 20%;
+            height: 80%;
+        }
+
+        .layui-input {
+            width: 100%
+        }
+
+        .layui-form-label {
+            width: 80px;
+        }
+    </style>
+</head>
+<body>
+<div style="padding: 20px; background-color: #e3e3e3;">
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-md12">
+            <div class="layui-card">
+                <div class="layui-collapse" lay-accordion style="background-color: #f8f8f8">
+                    <div class="layui-colla-item" style="color: #000000;">
+                        <div class="layui-colla-title" style="background-color: #f8f8f8;font-size:20px; font-weight: bold; color: #000000;">
+                                基于霍克斯过程的行为传播模型
+                        </div>
+                        <div class="layui-colla-content layui-show"
+                             style="background-color:#f8f8f8; overflow:auto; width:97%; height:100px; font-size:18px; color: #000000; line-height:25pt; text-align: justify; text-indent: 2em;">
+							 霍克斯过程是一种时间点过程，是Hawkes在1972年提出的一种特殊的线性自激励模型，其是非齐次泊松过程的补充，本质是满足随机过程的非齐次泊松过程。霍克斯过程认为过去的事件会影响未来事件发生的概率，过去事件的激励是正的、可加的并随时间衰减的。近年来，霍克斯过程被广泛应用于多种领域的建模，如地震预测，经济分析，社交网络建模等。多维霍克斯过程认为不仅过去的事件会对未来事件的发生有累计影响，并且不同维度之间有一定的影响关系。在社交网络的行为传播过程中，用户的行为不仅受其历史行为的影响，也受其邻居的影响。因此，使用多维霍克斯过程分析社交网络中的行为传播是可行的。
+                            <br>
+                        </div>
+                    </div>
+                </div>
+            </div>
+             <div class="layui-card" style="background-color: #f8f8f8">
+                <div class="layui-carousel" id="lunbotu" style="margin:0 auto; " lay-anim="" lay-indicator="inside" lay-arrow="hover">
+                    <div carousel-item align="center">
+                        <div class="layui-this"><img src="../static/image/start_Hawkes.PNG"  style="width: 80%;height:100%"></div>
+                        <div class=""><img src="../static/image/end_Hawkes.PNG" style="width: 80%;height:100%"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="/static/layui/layui.js"></script>
+<script>
+    layui.use('carousel', function () {
+        var carousel = layui.carousel;
+        //建造实例
+        carousel.render({
+            elem: '#lunbotu'     //指向容器选择器
+            , anim: 'fade'       //轮播切换动画方式
+            , margin: 'auto'
+            , width: '97%'     //设置容器宽度
+            , height: '640px'     //设定轮播容器高度
+            , arrow: 'always'     //始终显示箭头
+            , indicator: 'none'   //指示器位置:不显示
+            , interval: '3000'    //自动切换的时间间隔
+        });
+    });
+    layui.use('element', function () {
+        var element = layui.element;
+    });
+</script>
+
+</body>
+</html>

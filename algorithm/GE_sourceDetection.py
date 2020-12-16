@@ -1,5 +1,4 @@
 #!/usr/bin/python3.6
-# -*- coding: utf-8 -*-
 
 '''
     Implements the Louvain method.
@@ -480,7 +479,6 @@ def chooseLowDegreeObserves(com, observeNum):
 
 
 def SI_diffusion(percentage, choose_observer_method):
-    p=0.5
     sourceNode = random.randrange(0, node_num)  # 随机生成一个源节点
     infected_arr = [sourceNode]  # 感染节点集合，初始的感染节点只有一个源节点处于感染状态，其他节点都是处于易感染状态
     ObserverNodeList = []  # 观测节点列表
@@ -498,7 +496,6 @@ def SI_diffusion(percentage, choose_observer_method):
             ObserverNodeList.append(chooseLowDegreeObserves(com, countObserver))
         else:
             ObserverNodeList.append(random.sample(com, countObserver))
-    ObserverNodeList1 = copy.deepcopy(ObserverNodeList)
     ObserveNodeDic = {}  # 观测节点字典列表  key:观测节点 value:对应的分区
     for i in range(len(ObserverNodeList)):
         for j in ObserverNodeList[i]:
@@ -509,8 +506,6 @@ def SI_diffusion(percentage, choose_observer_method):
     keys = list(ObserveNodeDic.keys())  # 所有的观测节点
     relObserveList = list(keys)
     count = 0
-    noded_dic = {}
-    earliest_inf_obser_time = 100
     active_records = []  # 记录每次迭代激活的节点及其感染时间[[[去感染的节点1，感染节点1，感染时间1],[去感染的节点2，感染节点2，感染时间2],[]],[第二次迭代],[]...]
     edge_records = []  # 记录激活边在edges1中的序号
     while (count < ObserverNum):  # 直到所有的观测节点都被感染停止信息扩散
@@ -531,7 +526,6 @@ def SI_diffusion(percentage, choose_observer_method):
                     if j in keys:  # 用来记录观测节点的感染信息
                         count += 1
                         ObserveNodeDic[j].extend([infected_arr[i], infectTime[j]])
-                        noded_dic[j] = infected_arr[i]
                         keys.remove(j)  # 为了下次循环判断一个感染节点是否是观测节点的时候减少计算
     communityObservesInfectedTime = {}  # 每个社区观测节点的感染时间{社区id:[观测节点a感染时间，观测节点b感染时间...],社区id2：[]}
     comObserveNodeAndTime = {}
@@ -544,7 +538,6 @@ def SI_diffusion(percentage, choose_observer_method):
             comObserveNodeAndTime[values[0]] = [[key, values[2]]]
     communityAvgInfectedTime = {}  # 每个社区的平均感染时间列表
     for key, values in communityObservesInfectedTime.items():  # 计算前一半节点观测感染时间的最小值
-        # sorted_values = sorted(list(values))[:5]  # 对分区内的观测节点感染时间排序，并取前一半的观测节点感染时间值
         communityAvgInfectedTime[key] = round(sum(values) / len(values), 2)  # 取平均
     sortedComInfectedTime = sorted(communityAvgInfectedTime.items(),
                                    key=lambda item: item[1])  # 对每个社区的平均感染时间进行升序排序[(0, 3.04), (5, 3.53)...]
@@ -560,36 +553,13 @@ def SI_diffusion(percentage, choose_observer_method):
         candidateCommunityObserveInfectedNode.append(comObserveNodeAndTime[canCom])
         AllCandidateObserveNode.extend(comObserveNodeAndTime[canCom])
         # 对于前四个分区，每个分区选择感染时间较早的一半的观测节点
-        # AllCandidateObserveNode.extend(sorted(comObserveNodeAndTime[canCom], key=lambda x: x[1])[:(int)(len(comObserveNodeAndTime[canCom])/2)])
         ALLCandidatSourceNode.extend(Communitys[canCom])
-
-    to_infect = []  # 记录所有已知的去感染节点，这样可以通过时间信息判断这个节点是否是源节点，因为已经知道了这个节点是去感染的节点，所以其一定是一个感染者
-    maxDelay = mean + variance * 3
-    minDelay = mean - variance * 3
-    new_node_neigbors_dic = copy.deepcopy(node_neigbors_dic)
-    for k, v in ObserveNodeDic.items():
-        if random.random() < p:
-            new_node_neigbors_dic = change_matrix(new_node_neigbors_dic, k, v[1])
-            to_infect.append([v[1], v[2] - maxDelay])
-    Latest_init_time = earliest_inf_obser_time - minDelay
-    yes = 0
-    resres = []
-    for obList in to_infect:
-        if obList[0] not in ObserverNodeList1:
-            if obList[1] > Latest_init_time:
-                if obList[0] in ALLCandidatSourceNode:
-                    ALLCandidatSourceNode.remove(obList[0])
-                    resres.append(obList[0])
-                    yes += 1
-    #print("active_records", active_records)
     return candidateCommunity, candidateCommunityObserveInfectedNode, ALLCandidatSourceNode, AllCandidateObserveNode, sourceNode, \
-           CommunitiesList, SourceNodeInCom, relObserveList, active_records, edge_records,new_node_neigbors_dic
-
-
+           CommunitiesList, SourceNodeInCom, relObserveList, active_records, edge_records
 
 
 #BFS 广度优先搜索   层序遍历
-def BFS(new_node_neigbors_dic,s):#graph图  s指的是开始结点
+def BFS(s):#graph图  s指的是开始结点
     #需要一个队列
     queue=[]
     queue.append(s)
@@ -604,16 +574,40 @@ def BFS(new_node_neigbors_dic,s):#graph图  s指的是开始结点
             vertex=queue.pop(0)#保存第一结点，并弹出，方便把他下面的子节点接入
             BFSTree[vertex] = index
             #nodes=graph[vertex]#子节点的数组
-            nodes=new_node_neigbors_dic[vertex]
+            nodes=node_neigbors_dic[vertex]
             for w in nodes:
                 if w not in seen:#判断是否访问过，使用一个数组
                     t+=1
                     queue.append(w)
                     seen.add(w)
         index+=1
-    #print("BFSTree",len(BFSTree))
     return BFSTree
 
+def GM(Community,ObserverInfectedList):
+    Observes=[a[0] for a in ObserverInfectedList]# 所有的观测节点按照时间升序排列
+    Community=list(set(Community).difference(set(Observes)))
+    ReferenceNodeInfor = ObserverInfectedList[0]
+    d = []  # [[节点id,相对于第一个观测节点的时延],[],[],....] 观测节点对应时延列表
+    observeInfTimeDelayList = []  # 所有感染的观测节点（除了第一个参考节点）相对于第一个参考节点的时延
+    for observeIndex in range(1, len(ObserverInfectedList)):
+        d.append([])
+        timeDelay = ObserverInfectedList[observeIndex][1] - ReferenceNodeInfor[1]
+        d[len(d) - 1].extend([ObserverInfectedList[observeIndex][0], timeDelay])
+        observeInfTimeDelayList.append(timeDelay)
+    maxValue = -100
+    PreSource = 0
+    varianceMatrix = CalvarianceMatrix(ReferenceNodeInfor[0], d)  # 方差矩阵
+    for AssumedSource in Community:#候选源节点集合中每个节点为源时计算最大似然函数
+        BFSTree = BFS(AssumedSource)
+        u=ShortestPathLength(AssumedSource,ReferenceNodeInfor[0],d,BFSTree)#假设的源节点，参考的源节点，真实的时延向量（目前是为了计算观测节点） 得到理论的时间延迟
+        if type(u)!=list:
+            continue
+        bb = list(map(lambda x, y: x - y, observeInfTimeDelayList, 0.5*np.array(u)))
+        ans = np.dot(np.dot(u, np.linalg.inv(np.array(varianceMatrix))), np.transpose([bb]))
+        if(ans>maxValue):
+            maxValue=ans
+            PreSource=AssumedSource
+    return PreSource,maxValue
 
 def calShortestPath(ALLCandidatSourceNode, AllCandidateObserveNode):
     Observes = [a[0] for a in AllCandidateObserveNode]  # 所有的观测节点按照时间升序排列
@@ -690,54 +684,6 @@ def CalvarianceMatrix(ObserveOne, d):
                 varianceMatrix[i][j] = varianceMatrix[j][i] = calIntersectEdge1(shortestPathList1, shortestPathList2)
     return varianceMatrix
 
-def shortest_paths_num(Observes,AssumedSource):
-    observe_shortest_paths_num=[]
-    for observe in Observes:
-        num=0
-        paths=nx.all_shortest_paths(G,observe,AssumedSource)
-        length=nx.shortest_path_length(G,observe,AssumedSource)
-        for t in paths:
-            num+=1
-        observe_shortest_paths_num.append([observe,num,length])
-    return observe_shortest_paths_num
-
-def GM(Community,ObserverInfectedList,new_node_neigbors_dic):
-    Observes=[a[0] for a in ObserverInfectedList]# 所有的观测节点按照时间升序排列
-    mid=int(len(Observes)*0.5)
-    earlier_infected = Observes[:mid]  # 感染时间较早的一般观测节点
-    later_infected = Observes[mid:]  # 感染时间较晚的一般观测节点
-    Community=list(set(Community).difference(set(Observes)))
-    ReferenceNodeInfor = ObserverInfectedList[0]
-    d = []  # [[节点id,相对于第一个观测节点的时延],[],[],....] 观测节点对应时延列表
-    observeInfTimeDelayList = []  # 所有感染的观测节点（除了第一个参考节点）相对于第一个参考节点的时延
-    for observeIndex in range(1, len(ObserverInfectedList)):
-        d.append([])
-        timeDelay = ObserverInfectedList[observeIndex][1] - ReferenceNodeInfor[1]
-        d[len(d) - 1].extend([ObserverInfectedList[observeIndex][0], timeDelay])
-        observeInfTimeDelayList.append(timeDelay)
-    maxValue = -100
-    PreSource = 0
-    varianceMatrix = CalvarianceMatrix(ReferenceNodeInfor[0], d)  # 方差矩阵
-    for AssumedSource in Community:#候选源节点集合中每个节点为源时计算最大似然函数
-        BFSTree=BFS(new_node_neigbors_dic,AssumedSource)
-        if(len(BFSTree.keys())<node_num):
-            continue
-        earlier_sum = 0
-        later_sum = 0
-        for ea_node in earlier_infected:
-            earlier_sum += abs(BFSTree[AssumedSource] - BFSTree[ea_node])
-        for la_node in later_infected:
-            later_sum += abs(BFSTree[AssumedSource] - BFSTree[la_node])
-        u=ShortestPathLength(AssumedSource,ReferenceNodeInfor[0],d,BFSTree)#假设的源节点，参考的源节点，真实的时延向量（目前是为了计算观测节点） 得到理论的时间延迟
-        if type(u)!=list:
-            continue
-        bb = list(map(lambda x, y: x - y, observeInfTimeDelayList, 0.5*np.array(u)))
-        ans = np.dot(np.dot(u, np.linalg.inv(np.array(varianceMatrix))), np.transpose([bb]))
-        ans+=later_sum/earlier_sum
-        if(ans>maxValue):
-            maxValue=ans
-            PreSource=AssumedSource
-    return PreSource,maxValue
 
 
 # 输入candidateCommunity 候选分区，candidateCommunityObserveInfectedNode：候选分区的节点感染时间
