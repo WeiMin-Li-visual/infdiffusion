@@ -33,11 +33,11 @@ app = Flask(__name__)
 app.secret_key = 'dzb'
 socketio = SocketIO(app, async_mode=async_mode)
 # 连接数据库
-connection = pymysql.connect(host='localhost', user='root', password='root', db='po_evolution_platform')
-
-# 得到一个可以执行SQL语句的光标对象
-cur = connection.cursor()  # 执行完毕返回的结果集默认以元组显示
-cur.execute('use po_evolution_platform')  # 执行SQL语句
+# connection = pymysql.connect(host='localhost', user='root', password='root', db='po_evolution_platform')
+#
+# # 得到一个可以执行SQL语句的光标对象
+# cur = connection.cursor()  # 执行完毕返回的结果集默认以元组显示
+# cur.execute('use po_evolution_platform')  # 执行SQL语句
 
 # 配置Flask-Mail
 app.config['MAIL_SERVER'] = 'smtp.qq.com'  # 邮箱服务器

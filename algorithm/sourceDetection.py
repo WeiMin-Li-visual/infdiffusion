@@ -488,7 +488,7 @@ def SI_diffusion(percentage, choose_observer_method):
     SourceNodeInCom = Communitys.index(data[0])  # 源节点所在的分区
     for com in Communitys:
         countObserver = int(len(com) * percentage)
-        if countObserver < 1:
+        if countObserver < 2:
             countObserver = 2
         if choose_observer_method == 1:
             ObserverNodeList.append(random.sample(com, countObserver))

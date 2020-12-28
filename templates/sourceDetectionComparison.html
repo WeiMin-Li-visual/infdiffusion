@@ -150,10 +150,10 @@ layui.use('form', function () {
         var observerNodeList1 ={{ ObserverNodeList1 }}//观测节点列表
         var active_records1 = {{ active_records1 | tojson }}//激活的节点记录
         var edge_records1 = {{ edge_records1 | tojson}}//激活的边序号记录
-        var node_in_Community={{ node_in_Community }}//对应着每个节点所在的分区
+        var node_in_Community1={{ node_in_Community }}//对应着每个节点所在的分区
         var shortestPath1 ={{ shortestPath1}}//观测节点到真实源的最短路径编号
         var all_iteration_dis1={{ all_iteration_dis1 }}//每一次迭代的结果[[108(真实源), 108(预测源）, 0(误差距离)], [78, 78, 0], [65, 89, 2],...0.8（定位准确率）, 0.38（定位误差）]
-        drawGragh(dom1,graph1,err1,observerNodeList1,active_records1,edge_records1,node_in_Community,shortestPath1,all_iteration_dis1);
+        drawGragh(dom1,graph1,err1,observerNodeList1,active_records1,edge_records1,node_in_Community1,shortestPath1,all_iteration_dis1);
 
 
         var err2={{err2|tojson}};
@@ -162,11 +162,11 @@ layui.use('form', function () {
         var observerNodeList2 ={{ ObserverNodeList2 }}//观测节点列表
         var active_records2 = {{ active_records2 | tojson }}//激活的节点记录
         var edge_records2 = {{ edge_records2 | tojson}}//激活的边序号记录
-
+        var node_in_Community2={{ node_in_Community }}
         var shortestPath2 ={{ shortestPath2}}//观测节点到真实源的最短路径编号
         var all_iteration_dis2={{ all_iteration_dis2 }}
-
-        drawGragh(dom2,graph2,err2,observerNodeList2,active_records2,edge_records2,node_in_Community,shortestPath2,all_iteration_dis2);
+        drawGragh(dom2,graph2,err2,observerNodeList2,active_records2,edge_records2,node_in_Community2,shortestPath2,all_iteration_dis2);
+        drawGragh(dom1,graph1,err1,observerNodeList1,active_records1,edge_records1,node_in_Community1,shortestPath1,all_iteration_dis1);
 
         function drawGragh(dom,graph,err,observerNodeList,active_records,edge_records,node_in_Community,shortestPath,all_iteration_dis){
             var myChart = echarts.init(dom);
