@@ -33,7 +33,7 @@ pandas @ file:///C:/ci/pandas_1602088205210/work
 pbr==5.5.0
 psutil==5.7.0
 pycparser @ file:///tmp/build/80754af9/pycparser_1594388511720/work
-PyMySQL==0.10.1
+PyMySQL==1.0.2
 pyOpenSSL @ file:///tmp/build/80754af9/pyopenssl_1605545627475/work
 pyparsing==2.4.5
 PySocks @ file:///C:/ci/pysocks_1594394709107/work
