@@ -1125,4 +1125,4 @@ def gametheory_comparison():
 #     thread = socketio.start_background_task(target=gametheory)
 
 if __name__ == '__main__':
-    socketio.run(app, debug=True)
+    socketio.run(app, host='0.0.0.0',port=9400, debug=True)
