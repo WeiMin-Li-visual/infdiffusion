@@ -24,20 +24,41 @@ import os
 import io
 import datetime
 import re
+from dbutils.pooled_db import PooledDB
 
-thread_lock = Lock()
+# thread_lock = Lock()
+
+POOL = PooledDB(
+    creator=pymysql,  # 使用链接数据库的模块
+    maxconnections=10,  # 连接池允许的最大连接数，0和None表示不限制连接数
+    mincached=2,  # 初始化时，链接池中至少创建的空闲的链接，0表示不创建
+    maxcached=5,  # 链接池中最多闲置的链接，0和None不限制
+    maxshared=3,  # 链接池中最多共享的链接数量，0和None表示全部共享。PS: 无用，因为pymysql和MySQLdb等模块的 threadsafety都为1，所有值无论设置为多少，_maxcached永远为0，所以永远是所有链接都共享。
+    blocking=True,  # 连接池中如果没有可用连接后，是否阻塞等待。True，等待；False，不等待然后报错
+    maxusage=None,  # 一个链接最多被重复使用的次数，None表示无限制
+    setsession=[],  # 开始会话前执行的命令列表。如：["set datestyle to ...", "set time zone ..."]
+    ping=0,
+    # ping MySQL服务端，检查是否服务可用。# 如：0 = None = never, 1 = default = whenever it is requested, 2 = when a cursor is created, 4 = when a query is executed, 7 = always
+    host='localhost',
+    port=3306,
+    user='root',
+    password='root',
+    # database='use po_evolution_platform',
+    charset='utf8'
+)
 
 async_mode = None
 thread = None
 app = Flask(__name__)
 app.secret_key = 'dzb'
 socketio = SocketIO(app, async_mode=async_mode)
+
 # 连接数据库
-connection = pymysql.connect(host='localhost', user='root', password='root', db='po_evolution_platform')
+# connection = pymysql.connect(host='localhost', user='root', password='root', db='po_evolution_platform')
 
 # 得到一个可以执行SQL语句的光标对象
-cur = connection.cursor()  # 执行完毕返回的结果集默认以元组显示
-cur.execute('use po_evolution_platform')  # 执行SQL语句
+# cur = connection.cursor()  # 执行完毕返回的结果集默认以元组显示
+# cur.execute('use po_evolution_platform')  # 执行SQL语句
 
 # 配置Flask-Mail
 app.config['MAIL_SERVER'] = 'smtp.qq.com'  # 邮箱服务器
@@ -52,6 +73,8 @@ mail = Mail(app)
 @app.route('/checkUser', methods=["POST"])
 def checkUser():
     if request.method == 'POST':
+        conn = POOL.connection()
+        cur = conn.cursor()
         cur.execute('use po_evolution_platform')
         requestArgs = request.values
         user = requestArgs.get('user')
@@ -67,16 +90,15 @@ def checkUser():
 @app.route('/checkMail', methods=["POST"])
 def checkMail():
     if request.method == 'POST':
+        conn = POOL.connection()
+        cur = conn.cursor()
         cur.execute('use po_evolution_platform')
         requestArgs = request.values
         user = requestArgs.get('user')
         mail = requestArgs.get('mail')
-        print(user)
-        print(mail)
         cur.execute("select mail from users where user = " + "'" + user + "'")
         result = cur.fetchone()  # 获取查询结果
         if result is not None and mail == result[0]:
-            print("sdgf")
             return jsonify({'isExist': True})
         return jsonify({'isExist': False})
 
@@ -90,8 +112,10 @@ def forget():
         requestArgs = request.values
         new = requestArgs.get('password')
         user = requestArgs.get('user')
+        conn = POOL.connection()
+        cur = conn.cursor()
         cur.execute("update users set password=MD5('" + new + "') where user='" + user + "'")
-        connection.commit()
+        conn.commit()
         return jsonify({'isSuccess': 1})
 
 
@@ -108,10 +132,12 @@ def register():
         unit = requestArgs.get('unit')
         mail = requestArgs.get('mail')
         role = '1'  # 默认普通用户
+        conn = POOL.connection()
+        cur = conn.cursor()
         str1 = "'" + user + "'" + ",'" + number + "'," + "'" + mail + "'" + "," \
                + "'" + unit + "'" + "," + "MD5('" + password + "')" + ",1"
         cur.execute('insert into users (user,number,mail,unit,password,role_id) values (' + str1 + ")")
-        connection.commit()
+        conn.commit()
         return jsonify({'isSuccess': 1})
 
 
@@ -137,6 +163,8 @@ def send():
 # 登录界面，最后发布将其调整为主界面
 @app.route('/', methods=["GET", "POST"])
 def login():
+    conn = POOL.connection()
+    cur = conn.cursor()
     if request.method == 'GET':
         cur.execute('use po_evolution_platform')
         return render_template('login.html')
@@ -169,6 +197,8 @@ def login():
 def fun():
     requestArgs = request.values
     user = requestArgs.get('user')
+    conn = POOL.connection()
+    cur = conn.cursor()
     cur.execute("select * from users where user = " + "'" + user + "'")
     result = cur.fetchone()
     return jsonify({'user': result})
@@ -182,12 +212,14 @@ def deleteUserInfo():
     elif request.method == 'POST':
         requestArgs = request.values
         user = requestArgs.get('user')
+        conn = POOL.connection()
+        cur = conn.cursor()
         cur.execute("select user from users where user = " + "'" + user + "'")
         result = cur.fetchone()
         print(result)
         if result is not None:
             cur.execute("delete from users where user = " + "'" + user + "'")
-            connection.commit()
+            conn.commit()
             return jsonify({'isSuccess': 1})
         return jsonify({'isSuccess': 0})
 
@@ -196,6 +228,8 @@ def deleteUserInfo():
 @app.route('/getSessionUser', methods=["GET", "POST"])
 def getSessionUser():
     user = request.cookies['user']
+    conn = POOL.connection()
+    cur = conn.cursor()
     cur.execute("select * from users where user = " + "'" + user + "'")
     result = cur.fetchone()
 
@@ -258,6 +292,8 @@ def joinIn():
 @app.route('/checkNetworkName', methods=["POST"])
 def checkNetworkName():
     if request.method == 'POST':
+        conn = POOL.connection()
+        cur = conn.cursor()
         cur.execute('use po_evolution_platform')
         requestArgs = request.values
         dataname = requestArgs.get('textfield')
@@ -277,6 +313,8 @@ def checkNetworkName():
 # 用户可以自己添加网络
 @app.route('/addNetwork', methods=["GET", "POST"])
 def addNetwork():
+    conn = POOL.connection()
+    cur = conn.cursor()
     err = "false"
     if request.method == 'GET':
         err = "true"
@@ -353,7 +391,7 @@ def addNetwork():
                 str1 = "'" + dataname + "'" + ",'" + user + "'," + "'" + file_path + "'" + "," \
                        + "'" + str(result[0]) + "'"
                 cur.execute('insert into datas (dataname,user,data_path,role_id) values (' + str1 + ")")
-                connection.commit()
+                conn.commit()
 
     return render_template('addNetwork.html', err=err)
 
