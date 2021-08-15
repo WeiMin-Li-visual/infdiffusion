@@ -1,7 +1,5 @@
 # -*- coding:utf-8 -*-
 from flask import Flask, render_template, request, jsonify
-from flask_socketio import SocketIO
-from threading import Lock
 from algorithm import gameTheory
 from algorithm import sourceDetection as sd
 from algorithm import SIModel as si
@@ -9,24 +7,19 @@ from algorithm import SIRModel as sir
 from algorithm import opinionEvolution as oe
 from algorithm import hawkesProcess
 from algorithm import GE_sourceDetection as GE
-import pandas as pd
 import numpy as np
 import json
 import random
 import copy
 import networkx as nx
 from flask_socketio import SocketIO
-from threading import Lock
 from flask_mail import Mail, Message
 import pymysql
-import requests
 import os
-import io
 import datetime
 import re
 from dbutils.pooled_db import PooledDB
-
-# thread_lock = Lock()
+import config
 
 POOL = PooledDB(
     creator=pymysql,  # 使用链接数据库的模块
@@ -53,12 +46,6 @@ app = Flask(__name__)
 app.secret_key = 'dzb'
 socketio = SocketIO(app, async_mode=async_mode)
 
-# 连接数据库
-# connection = pymysql.connect(host='localhost', user='root', password='root', db='po_evolution_platform')
-
-# 得到一个可以执行SQL语句的光标对象
-# cur = connection.cursor()  # 执行完毕返回的结果集默认以元组显示
-# cur.execute('use po_evolution_platform')  # 执行SQL语句
 
 # 配置Flask-Mail
 app.config['MAIL_SERVER'] = 'smtp.qq.com'  # 邮箱服务器
@@ -1163,4 +1150,6 @@ def gametheory_comparison():
 #     thread = socketio.start_background_task(target=gametheory)
 
 if __name__ == '__main__':
-    socketio.run(app, host='0.0.0.0',port=9400, debug=True)
+    pem_path = os.path.join(config.UPLOADED_PHOTOS_SSL, '6115833_lib61504.xyz.pem')
+    pem_key = os.path.join(config.UPLOADED_PHOTOS_SSL, '6115833_lib61504.xyz.key')
+    app.run(host='0.0.0.0', port=9400, debug=True, ssl_context=(pem_path, pem_key))

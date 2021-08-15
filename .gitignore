@@ -263,3 +263,4 @@ dmypy.json
 *.iml
 out
 gen
+static/ssl
