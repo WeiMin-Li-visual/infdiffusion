@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-    <title>舆情可视化平台</title>
+    <title>舆情分析平台</title>
     <link rel="stylesheet" href="../static/layui/css/layui.css">
     <link rel="icon" href="../static/image/icon/logo.ico" type="image/x-icon">
     <style>
@@ -195,7 +195,8 @@
     <!-- 尾部 -->
     <div class="layui-footer" style="text-align: center">
         <!-- 底部固定区域 -->
-        2020 - 社交网络舆情传播演化可视化平台
+        © 2021 - 2022 lib61504.top 领域数据赋能系统版权所有 ICP证：
+    <a href="https://beian.miit.gov.cn/" target="_blank">沪ICP备2021023842号</a>
     </div>
     <!-- 尾部结束 -->
 </div>
@@ -233,8 +234,8 @@
             var inf = document.getElementById('init_title');
             inf.remove();
         }
-        ifr.src = 'https://118.31.76.165:9400/' + target;
-        {#ifr.src = 'http://127.0.0.1:5000/' + target;#}
+        {#ifr.src = 'https://www.lib61504.top:9400/' + target;#}
+        ifr.src = 'http://127.0.0.1:9400/' + target;
         {#ifr.src = 'http://58.199.160.140:9400/' + target;#}
     }
 

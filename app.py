@@ -1,5 +1,5 @@
 # -*- coding:utf-8 -*-
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify,redirect
 from algorithm import gameTheory
 from algorithm import sourceDetection as sd
 from algorithm import SIModel as si
@@ -1149,7 +1149,15 @@ def gametheory_comparison():
 # def GameTheory_connect():
 #     thread = socketio.start_background_task(target=gametheory)
 
+# @app.before_request
+# def before_request():
+#     if request.url.startswith('http://'):
+#         print("deded")
+#         url=request.url.replace('http://','https://',1)
+#         return redirect(url,code=301)
+
 if __name__ == '__main__':
-    pem_path = os.path.join(config.UPLOADED_PHOTOS_SSL, '6115833_lib61504.xyz.pem')
-    pem_key = os.path.join(config.UPLOADED_PHOTOS_SSL, '6115833_lib61504.xyz.key')
+    # app.run(host='127.0.0.1', port=9400, debug=True)
+    pem_path = os.path.join(config.UPLOADED_PHOTOS_SSL, '8369638_lib61504.top.pem')
+    pem_key = os.path.join(config.UPLOADED_PHOTOS_SSL, '8369638_lib61504.top.key')
     app.run(host='0.0.0.0', port=9400, debug=True, ssl_context=(pem_path, pem_key))
